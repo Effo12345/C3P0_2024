@@ -7,15 +7,21 @@ endif
 
 SPECS = nosys.specs
 
-INCLUDES = -I.. -I. -ILibraries/ -IDrivers/ -IStartup/ 
+INCLUDES = -I.. -I../include -ILibraries/ -IDrivers/ -IStartup/
 ARGS = -O0 -ffunction-sections -fdata-sections -fno-exceptions -c -fmessage-length=0 -Wno-psabi -specs=$(SPECS)
 CFLAGS =  -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -mcpu=cortex-m4 -mfloat-abi=soft -mthumb -g3 -gdwarf-2 -gstrict-dwarf
 
-AUTOCPP := $(wildcard ../*.cpp)
-AUTOH := $(wildcard ../*.h)
+AUTOH := $(wildcard ../include/*.h)
 
-AUTOOBJECTS := $(patsubst %.cpp,%.o,$(AUTOCPP))
-OBJECTS := $(AUTOOBJECTS) Startup/startup_mk60d10.o Libraries/FEHMotor.o Drivers/mcg.o Drivers/i2c.o Drivers/spi.o Drivers/uart.o Drivers/ff.o Drivers/SDHC.o Drivers/lptmr.o FEHProteus.o Drivers/FEHPropeller.o Libraries/FEHUtility.o Libraries/FEHIO.o Drivers/adc16.o Libraries/FEHBuzzer.o Libraries/FEHServo.o Libraries/FEHLCD.o Libraries/FEHAccel.o Libraries/FEHBattery.o Drivers/FEHXBee.o Libraries/FEHRPS.o Libraries/FEHSD.o Libraries/FEHRandom.o
+# Recursive function to find all .cpp files in source directory and subdirectories
+recursiveWildcard=$(foreach d,$(wildcard $(1:=/*)),$(call recursiveWildcard,$d,$2) $(filter $(subst *,%,$2),$d))
+STUDENT_CPP_FILES := $(call recursiveWildcard, ../src, *.cpp)
+$(info STUDENT_CPP_FILES: $(STUDENT_CPP_FILES))
+
+# Generating corresponding object file names
+STUDENT_COMPILED_OBJECT_FILES := $(patsubst %.cpp,%.o,$(STUDENT_CPP_FILES))
+
+OBJECTS := Startup/startup_mk60d10.o Libraries/FEHMotor.o Drivers/mcg.o Drivers/i2c.o Drivers/spi.o Drivers/uart.o Drivers/ff.o Drivers/SDHC.o Drivers/lptmr.o FEHProteus.o Drivers/FEHPropeller.o Libraries/FEHUtility.o Libraries/FEHIO.o Drivers/adc16.o Libraries/FEHBuzzer.o Libraries/FEHServo.o Libraries/FEHLCD.o Libraries/FEHAccel.o Libraries/FEHBattery.o Drivers/FEHXBee.o Libraries/FEHRPS.o Libraries/FEHSD.o Libraries/FEHRandom.o
 
 ifeq ($(OS), Windows_NT)
 DELOBJECTS := $(subst /,\, $(OBJECTS))
@@ -36,8 +42,12 @@ endif
 %.o : %.cpp $(AUTOH)
 	$(CC) $(INCLUDES) $(ARGS) $(CFLAGS) -c $< -o $@
 
-$(TARGET).elf: $(OBJECTS)
-	$(LD) $(OBJECTS) -u _printf_float -u _scanf_float -TLinker/MK60DN512Z_flash.ld -Xlinker --gc-sections -Wl,-Map,../$(TARGET).map -n -specs=$(SPECS) -mcpu=cortex-m4 -mthumb -mfloat-abi=soft -g3 -gdwarf-2 -gstrict-dwarf -g -o ../$(TARGET).elf
+# Rule to compile any .cpp file in source directory or its subdirectories
+$(STUDENT_COMPILED_OBJECT_FILES): %.o: %.cpp $(AUTOH)
+	$(CC) $(INCLUDES) $(ARGS) $(CFLAGS) -c $< -o $@ 
+
+$(TARGET).elf: $(OBJECTS) $(STUDENT_COMPILED_OBJECT_FILES)
+	$(LD) $(OBJECTS) $(STUDENT_COMPILED_OBJECT_FILES) -u _printf_float -u _scanf_float -TLinker/MK60DN512Z_flash.ld -Xlinker --gc-sections -Wl,-Map,../$(TARGET).map -n -specs=$(SPECS) -mcpu=cortex-m4 -mthumb -mfloat-abi=soft -g3 -gdwarf-2 -gstrict-dwarf -g -o ../$(TARGET).elf
 
 $(TARGET).s19: $(TARGET).elf
 	arm-none-eabi-objcopy  -O srec --srec-len=40 --srec-forceS3 ../$(TARGET).elf ../$(TARGET).s19
@@ -57,6 +67,3 @@ ifeq ($(OS),Windows_NT)
 else
 	@tools/sizeGet
 endif
-	@echo ----------------------------------------------
-	@echo Download Successful. Please eject the SD card. >&2
-	@echo ----------------------------------------------
