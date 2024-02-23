@@ -1,3 +1,5 @@
+#pragma once
+
 /**
  * Encoding of the image to display on proteus boot.
  */

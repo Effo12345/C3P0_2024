@@ -7,7 +7,7 @@ endif
 
 SPECS = nosys.specs
 
-INCLUDES = -I.. -I../include -ILibraries/ -IDrivers/ -IStartup/
+INCLUDES = -I.. -I. -I../include -ILibraries/ -IDrivers/ -IStartup/
 ARGS = -O0 -ffunction-sections -fdata-sections -fno-exceptions -c -fmessage-length=0 -Wno-psabi -specs=$(SPECS)
 CFLAGS =  -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -mcpu=cortex-m4 -mfloat-abi=soft -mthumb -g3 -gdwarf-2 -gstrict-dwarf
 
@@ -15,7 +15,7 @@ AUTOH := $(wildcard ../include/*.h)
 
 # Recursive function to find all .cpp files in source directory and subdirectories
 recursiveWildcard=$(foreach d,$(wildcard $(1:=/*)),$(call recursiveWildcard,$d,$2) $(filter $(subst *,%,$2),$d))
-STUDENT_CPP_FILES := $(call recursiveWildcard, ../src, *.cpp)
+STUDENT_CPP_FILES := $(call recursiveWildcard, ../, *.cpp)
 $(info STUDENT_CPP_FILES: $(STUDENT_CPP_FILES))
 
 # Generating corresponding object file names
@@ -46,8 +46,8 @@ endif
 $(STUDENT_COMPILED_OBJECT_FILES): %.o: %.cpp $(AUTOH)
 	$(CC) $(INCLUDES) $(ARGS) $(CFLAGS) -c $< -o $@ 
 
-$(TARGET).elf: $(OBJECTS) $(STUDENT_COMPILED_OBJECT_FILES)
-	$(LD) $(OBJECTS) $(STUDENT_COMPILED_OBJECT_FILES) -u _printf_float -u _scanf_float -TLinker/MK60DN512Z_flash.ld -Xlinker --gc-sections -Wl,-Map,../$(TARGET).map -n -specs=$(SPECS) -mcpu=cortex-m4 -mthumb -mfloat-abi=soft -g3 -gdwarf-2 -gstrict-dwarf -g -o ../$(TARGET).elf
+$(TARGET).elf: $(STUDENT_COMPILED_OBJECT_FILES)
+	$(LD) $(STUDENT_COMPILED_OBJECT_FILES) -u _printf_float -u _scanf_float -TLinker/MK60DN512Z_flash.ld -Xlinker --gc-sections -Wl,-Map,../$(TARGET).map -n -specs=$(SPECS) -mcpu=cortex-m4 -mthumb -mfloat-abi=soft -g3 -gdwarf-2 -gstrict-dwarf -g -o ../$(TARGET).elf
 
 $(TARGET).s19: $(TARGET).elf
 	arm-none-eabi-objcopy  -O srec --srec-len=40 --srec-forceS3 ../$(TARGET).elf ../$(TARGET).s19
