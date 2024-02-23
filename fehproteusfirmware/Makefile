@@ -16,7 +16,7 @@ AUTOH := $(wildcard ../include/*.h)
 # Recursive function to find all .cpp files in source directory and subdirectories
 recursiveWildcard=$(foreach d,$(wildcard $(1:=/*)),$(call recursiveWildcard,$d,$2) $(filter $(subst *,%,$2),$d))
 STUDENT_CPP_FILES := $(call recursiveWildcard, ../, *.cpp)
-$(info STUDENT_CPP_FILES: $(STUDENT_CPP_FILES))
+#$(info STUDENT_CPP_FILES: $(STUDENT_CPP_FILES))
 
 # Generating corresponding object file names
 STUDENT_COMPILED_OBJECT_FILES := $(patsubst %.cpp,%.o,$(STUDENT_CPP_FILES))
