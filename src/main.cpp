@@ -1,12 +1,11 @@
 #include <FEHLCD.h>
-#include <iostream>
-#include <source/kernel.hpp>
-
-int i = 0;
-int j = 0;
+#include <starlib/chassis/chassis.hpp>
 
 int main(void) {
     LCD.Clear(BLACK);
     LCD.WriteLine("Hello, World!");
+
+    starlib::Chassis drive;
+
 	return 0;
 }
