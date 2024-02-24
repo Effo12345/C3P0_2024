@@ -4,6 +4,8 @@
 #include "derivative.h"
 #include "MK60DZ10.h"
 #include "adc16.h"
+#include <utility>
+#include <FEHLCD.h>
 
 /**
  * @brief Objects to be used with the 32 Flex I/O Pins on the FEH Proteus.
@@ -127,6 +129,32 @@ private:
 
     DigitalEncoder();
     void Initialize( FEHIO::FEHIOPin pin, FEHIO::FEHIOInterruptTrigger trigger );
+};
+
+/**
+ * @brief Monitor a digital quad encoder using two digital input pins on the Proteus
+ * P3_6 and P3_7 cannot be used for digital encoders as they are hard-wired to other Proteus functions.
+ * Both pins must be in the same bank. Quad encoder mode is only enabled on banks
+ * A and B.
+ */
+class QuadEncoder {
+public:
+    QuadEncoder( FEHIO::FEHIOPin pin1, FEHIO::FEHIOPin pin2);
+    QuadEncoder(FEHIO::FEHIOPin pin1, FEHIO::FEHIOPin pin2, float wheelDiameter);
+
+    std::pair<int, int> pinTest();
+    int ticks();
+    int distanceTraveled();
+
+    static int processQuadTicks(int state1, int state2, int &prevState);
+
+private:
+    FEHIO::FEHIOPin _pin1;
+    FEHIO::FEHIOPin _pin2;
+    float diameter {};
+
+    QuadEncoder();
+    void Initialize( FEHIO::FEHIOPin pin1, FEHIO::FEHIOPin pin2, FEHIO::FEHIOInterruptTrigger trigger );
 };
 
 /**

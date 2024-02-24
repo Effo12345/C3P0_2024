@@ -157,6 +157,21 @@ DigitalEncoder::DigitalEncoder()
 
 }
 
+
+QuadEncoder::QuadEncoder(FEHIO::FEHIOPin pin1, FEHIO::FEHIOPin pin2, float wheelDiameter) {
+    diameter = wheelDiameter;
+    FEHIO::FEHIOInterruptTrigger trigger(FEHIO::EitherEdge);
+    Initialize(pin1, pin2, trigger);
+}
+
+// Begin functions for quad encoder
+QuadEncoder::QuadEncoder( FEHIO::FEHIOPin pin1, FEHIO::FEHIOPin pin2) {
+    // Default wheel diameter to -1 so it can be caught later
+    QuadEncoder(pin1, pin2, -1.0f);
+}
+
+QuadEncoder::QuadEncoder() {}
+
 // Function used to enable interrupt register
 void enable_irq(int irq)
 {
@@ -226,37 +241,149 @@ void DigitalEncoder::Initialize( FEHIO::FEHIOPin pin, FEHIO::FEHIOInterruptTrigg
     }
 }
 
-//Interrupt port functions
-unsigned long interrupt_counts[32];
-void PORTB_IRQHandler()
-{
-    int pins[8] = { 11, 10, 7, 6, 5, 4, 1, 0 };
+//
+//
+//
+//
+// TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
+// Quad encoders should plug into pin banks B and C
+// Remove LCD include in this file
+// Remove testPin function in QuadEncoder
+//
+//
 
-    for( int i=0 ; i<8 ; i++)
-    {
 
-        if( (PORTB_ISFR & (1<<pins[i])) != 0)
-        {
-            interrupt_counts[i]++;
-            PORTB_ISFR &= (1<<pins[i]);
+// Store the pins of the two quad encoders
+std::pair<FEHIO::FEHIOPin, FEHIO::FEHIOPin> quadPins[2];
+
+void QuadEncoder::Initialize( FEHIO::FEHIOPin pin1, FEHIO::FEHIOPin pin2, FEHIO::FEHIOInterruptTrigger trigger ) {
+    // store selected pin numbers in class
+    _pin1 = pin1;
+    _pin2 = pin2;
+	unsigned char trig = (unsigned char)trigger;
+    switch( GPIOPorts[ (int)_pin1 ] ) {
+        case PortB: {
+            PORT_PCR_REG( PORTB_BASE_PTR, GPIOPinNumbers[ (int)_pin1 ] ) = ( 0 | PORT_PCR_MUX( 1 ) | PORT_PCR_PE_MASK | PORT_PCR_PS_MASK | PORT_PCR_IRQC(trig) | PORT_PCR_PFE_MASK );
+            GPIOB_PDDR &= ~GPIO_PDDR_PDD( GPIO_PIN( GPIOPinNumbers[ (int)_pin1 ] ) );
+
+            PORT_PCR_REG( PORTB_BASE_PTR, GPIOPinNumbers[ (int)_pin2 ] ) = ( 0 | PORT_PCR_MUX( 1 ) | PORT_PCR_PE_MASK | PORT_PCR_PS_MASK | PORT_PCR_IRQC(trig) | PORT_PCR_PFE_MASK );
+            GPIOB_PDDR &= ~GPIO_PDDR_PDD( GPIO_PIN( GPIOPinNumbers[ (int)_pin2 ] ) );
+
+            LCD.WriteAt("Configured GPIO bank B", 0, 100);
+
+            enable_irq(INT_PORTB);
+            break;
+        }
+        case PortC: {
+            PORT_PCR_REG( PORTC_BASE_PTR, GPIOPinNumbers[ (int)_pin1 ] ) = ( 0 | PORT_PCR_MUX( 1 ) | PORT_PCR_PE_MASK | PORT_PCR_PS_MASK | PORT_PCR_IRQC(trig) | PORT_PCR_PFE_MASK );
+            GPIOC_PDDR &= ~GPIO_PDDR_PDD( GPIO_PIN( GPIOPinNumbers[ (int)_pin1 ] ) );
+
+            PORT_PCR_REG( PORTC_BASE_PTR, GPIOPinNumbers[ (int)_pin2 ] ) = ( 0 | PORT_PCR_MUX( 1 ) | PORT_PCR_PE_MASK | PORT_PCR_PS_MASK | PORT_PCR_IRQC(trig) | PORT_PCR_PFE_MASK );
+            GPIOC_PDDR &= ~GPIO_PDDR_PDD( GPIO_PIN( GPIOPinNumbers[ (int)_pin2 ] ) );
+
+            LCD.WriteAt("Configured GPIO bank C", 0, 120);
+
+            enable_irq(INT_PORTC);
+            break;
         }
     }
 }
-void PORTC_IRQHandler()
-{
+
+std::pair<int, int> QuadEncoder::pinTest() {
+    int pin1 = GPIOA_PDIR & GPIO_PDIR_PDI( GPIO_PIN( GPIOPinNumbers[ (int)quadPins[0].first ] ) );
+    int pin2 = GPIOA_PDIR & GPIO_PDIR_PDI( GPIO_PIN( GPIOPinNumbers[ (int)quadPins[0].second ] ) );
+
+    return {pin1, pin2};
+}
+
+// Returns 1 if forward, -1 if backward, 0 if invalid state
+// Modifies previous state at the end of execution
+// state1 becomes least significant digit, state2 most significant
+int QuadEncoder::processQuadTicks(int state1, int state2, int &prevState) {
+    // (1-1) evaluates to zero, but marks an impossible state
+    const int directionMatrix[4][4] = {
+        {0, -1, 1, (1-1)},
+        {1, 0, (1-1), -1},
+        {-1, (1-1), 0, 1},
+        {(1-1), 1, -1, 0}
+    };
+
+    // Left shift state2 so it's the most siginifcant digit
+    int state = state2 << 1;
+    // Binary add in state1, if it is set
+    state |= state1;
+
+    // Now, process the value into a direction
+    int direction = directionMatrix[prevState][state];
+
+    // Set prevState for next call
+    prevState = state;
+
+    return direction;
+}
+
+//Interrupt port functions
+unsigned long interrupt_counts[32];
+long quadTicks[2] {};
+
+int lastBState {};
+void PORTB_IRQHandler() {
+    int pins[8] = { 11, 10, 7, 6, 5, 4, 1, 0 };
+
+    // Look for just the quad encoder pins
+    int pin1 = 0;
+    int pin2 = 0;
+    
+    if(PORTB_ISFR & (1<<pins[quadPins[0].first]) != 0 || PORTB_ISFR & (1<<pins[quadPins[0].second]) != 0) {
+        // One of the pins we care about has an interrupt, so process them both
+        pin1 = GPIOB_PDIR & GPIO_PDIR_PDI( GPIO_PIN( GPIOPinNumbers[ (int)quadPins[0].first ] ) );
+        pin2 = GPIOB_PDIR & GPIO_PDIR_PDI( GPIO_PIN( GPIOPinNumbers[ (int)quadPins[0].second ] ) );
+    }
+
+    LCD.WriteAt(pin1, 0, 160);
+    LCD.WriteAt(pin2, 50, 160);
+
+    quadTicks[0] += QuadEncoder::processQuadTicks(pin1, pin2, lastBState);
+
+    //Clear pin interrupts to prevent processor weirdness
+    for( int i=0 ; i<8 ; i++) {
+
+        if( (PORTB_ISFR & (1<<pins[i])) != 0) {
+            interrupt_counts[i]++;
+            PORTB_ISFR &= (1<<pins[i]);
+        }
+    }   
+}
+
+int lastCState {};
+void PORTC_IRQHandler() {
     int pins[6] = { 0, 1, 8, 9, 10, 11 };
 
-    for( int i=0 ; i<6 ; i++)
-    {
-        if( (PORTC_ISFR & (1<<pins[i])) != 0)
-        {
+    // Look for just the quad encoder pins
+    int pin1 = 0;
+    int pin2 = 0;
+    
+    if(PORTC_ISFR & (1<<pins[quadPins[1].first - 8]) != 0 || PORTC_ISFR & (1<<pins[quadPins[1 - 8].second]) != 0) {
+        // One of the pins we care about has an interrupt, so process them both
+        pin1 = GPIOC_PDIR & GPIO_PDIR_PDI( GPIO_PIN( GPIOPinNumbers[ (int)quadPins[1].first ] ) );
+        pin2 = GPIOC_PDIR & GPIO_PDIR_PDI( GPIO_PIN( GPIOPinNumbers[ (int)quadPins[1].second ] ) );
+    }
+
+    LCD.WriteAt(pin1, 0, 180);
+    LCD.WriteAt(pin2, 50, 180);
+
+    quadTicks[1] += QuadEncoder::processQuadTicks(pin1, pin2, lastCState);
+
+    //Clear pin interrupts to prevent processor weirdness
+    for( int i=0 ; i<6 ; i++) {
+        if( (PORTC_ISFR & (1<<pins[i])) != 0) {
             interrupt_counts[i+8]++;
             PORTC_ISFR &= (1<<pins[i]);
         }
     }
 }
-void PORTA_IRQHandler()
-{
+
+void PORTA_IRQHandler() {
     int pins[11] = { 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7 };
 
     for( int i=0 ; i<11 ; i++)
@@ -291,6 +418,28 @@ void DigitalEncoder::ResetCounts()
 {
     interrupt_counts[_pin] = 0;
 }
+
+
+int QuadEncoder::ticks() {
+    if((int)_pin1 < 8) {
+        return quadTicks[0];
+    }
+    else {
+        return quadTicks[1];
+    }
+}
+
+// Can't be used if no wheel diameter provided
+int QuadEncoder::distanceTraveled() {
+    if(diameter <= 0.0f) {
+        LCD.WriteAt("Bad dist traveled", 0, 200);
+        return -1;
+    }
+    else {
+        return ticks() * (diameter * (3.14159f) / 360);
+    }
+}
+
 
 // Begin Functions for Analog Input Pin Type
 AnalogInputPin::AnalogInputPin( FEHIO::FEHIOPin _pin )
