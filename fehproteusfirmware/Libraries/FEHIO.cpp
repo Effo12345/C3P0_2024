@@ -246,9 +246,9 @@ void DigitalEncoder::Initialize( FEHIO::FEHIOPin pin, FEHIO::FEHIOInterruptTrigg
 //
 //
 // TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-// Quad encoders should plug into pin banks B and C
 // Remove LCD include in this file
 // Remove testPin function in QuadEncoder
+//
 //
 //
 
