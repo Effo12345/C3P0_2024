@@ -5,8 +5,8 @@
 
 #define turn_constant 0.5
 
-FEHMotor left_motor(FEHMotor::Motor0, );
-FEHMotor right_motor(FEHMotor::Motor1, );
+FEHMotor left_motor(FEHMotor::Motor0, 9.0);
+FEHMotor right_motor(FEHMotor::Motor1, 9.0);
 AnalogInputPin bump(FEHIO::P0_0);
 
 void DriveStraight(int, float); //1 for forward, -1 for backward. float for seconds
