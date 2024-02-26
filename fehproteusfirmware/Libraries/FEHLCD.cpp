@@ -424,11 +424,12 @@ void FEHLCD::_Initialize()
     // widx( 0x29 );  //display on
     //WriteIndex( 0x29 );
 
-    Clear(FEHLCD::White);
+    Clear(FEHLCD::Black);
     PrintImage(111,30);
     PrintLogo(86,175);
-    SetFontColor(FEHLCD::Black);
+    SetFontColor(FEHLCD::White);
     WriteAt("v02.09.00",1,1);
+    SetFontColor(FEHLCD::Black);
 
     WriteIndex(0x29);  //display on
     Sleep(100);
@@ -488,13 +489,13 @@ void FEHLCD::PrintImage(int x, int y)
         for(int j = 0; j < image[i]; j++){
             unsigned char r, g, b;
             if(image[i + 1] ==0) {
-                r = 255; g=255; b=255;
+                r = 0; g=0; b=0;
             }
             else if(image[i + 1]==1) {
-                r = 212; g=0; b=38;
+                r = 245; g=231; b=44;
             }
             else {
-                r=181; g= 186; b=176;
+                r=168; g= 160; b=161;
             }
             //_forecolor = ConvertRGBColorTo16Bit(image[k][0],image[k][1],image[k][2]);
             _forecolor = ConvertRGBColorTo16Bit(r,g,b);
@@ -513,13 +514,13 @@ void FEHLCD::PrintLogo(int x, int y)
         for(int j = 0; j < logo[i]; j++){
             unsigned char r, g, b;
             if(logo[i + 1] ==0) {
-                r = 255; g=255; b=255;
-            }
-            else if(logo[i + 1]==1){
                 r = 0; g=0; b=0;
             }
+            else if(logo[i + 1]==1){
+                r = 168; g=160; b=162;
+            }
             else{
-                r = 212; g=0; b=38;
+                r = 245; g=231; b=44;
             }
             //_forecolor = ConvertRGBColorTo16Bit(image[k][0],image[k][1],image[k][2]);
             _forecolor = ConvertRGBColorTo16Bit(r,g,b);
