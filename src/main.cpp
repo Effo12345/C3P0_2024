@@ -6,49 +6,46 @@
 
 #define turn_constant 0.5
 
-FEHMotor left_motor(FEHMotor::Motor0, 9.0);
-FEHMotor right_motor(FEHMotor::Motor1, 9.0);
-DigitalInputPin bump(FEHIO::P0_0);
+enum direction {
+    left,
+    right
+};
 
-AnalogInputPin cds(FEHIO::P2_0);
+FEHMotor driveL(FEHMotor::Motor1, 9.0);
+FEHMotor driveR(FEHMotor::Motor0, 9.0);
 
-void DriveStraight(int, float); //1 for forward, -1 for backward. float for seconds
-void DriveTurn(int, float); //1 for right, -1 for left. float for seconds
+AnalogInputPin cds(FEHIO::P3_7);
 
-void DriveStraight(int direction, float distance)
-{
-    left_motor.SetPercent((direction * 25));
-    right_motor.SetPercent((direction * 25));
-
-    if(distance != 0)
-    {
-       Sleep(distance); 
-    }
-    else
-    {
-        while(bump.Value() == 1)
-        {}
-    }
-
-    left_motor.SetPercent(0);
-    right_motor.SetPercent(0);
-    Sleep(1.0);
+void stop() {
+    driveL.SetPercent(0);
+    driveR.SetPercent(0);
 }
 
-void DriveTurn(int direction, float angle)
-{
-    left_motor.SetPercent((direction * 15));
-    right_motor.SetPercent((direction * -15));
-    Sleep(angle);
+void drive(int pct, float time) {
+    driveL.SetPercent(pct);
+    driveR.SetPercent(pct);
+    Sleep(time);
 
-    left_motor.SetPercent(0);
-    right_motor.SetPercent(0);
-    Sleep(1.0);
+    stop();
+}
+
+void turn(int pct, direction dir, float time) {
+    if(dir == left) {
+        driveL.SetPercent(-pct);
+        driveR.SetPercent(pct);
+    }
+    else {
+        driveL.SetPercent(pct);
+        driveR.SetPercent(-pct);
+    }
+
+    Sleep(time);
+    stop();
 }
 
 void waitForLight(float target, float tolerance, float timeout) {
     float start = TimeNow();
-    while(fabs(cds.Value() - target) > tolerance && (TimeNow() - start) < timeout) {
+    while(cds.Value() > target && (TimeNow() - start) < timeout) {
         Sleep(50);
         LCD.WriteAt(cds.Value(), 0, 50);
     }
@@ -60,18 +57,43 @@ int main(void)
     LCD.Clear(BLACK);
 
     waitForLight(2.0f, 0.2f, 10.0f);
+
+    // Turn to face ramp and drive up it
+    turn(25, right, 0.6);
+    drive(25, 1.2);
+    turn(25, left, 0.25);
+    drive(50, 2.5);
+
+    // Maneuver around passport
+    float passportTurn = 0.5f;
+    float passportDrive = 2.0f;
+    turn(25, left, passportTurn);
+    drive(25, passportDrive);
+
+    // Face button and run into it
+    float buttonTurn = 0.4f;
+    float buttonDrive = 3.0f;
+    turn(25, right, buttonTurn);
+    drive(25, buttonDrive);
+
+    // Undo path
+    drive(-25, buttonDrive);
+    turn(25, left, buttonTurn);
+    drive(-25, passportDrive);
+    turn(25, right, 0.4f);
+    drive(-25, 4);
     
-    DriveTurn(1, 0.5); //realign
-    DriveStraight(1, 3.5); //drive up the ramp
-    DriveTurn(-1, turn_constant); //turn left
-    DriveStraight(1, 0.5); //forward a bit
-    DriveTurn(1, turn_constant); //turn right
-    DriveStraight(1, 0); //drive into buttons
-    DriveStraight(-1, 2); //drive backwards
-    DriveTurn(1, turn_constant); //turn
-    DriveStraight(1, .5); //forward a bit
-    DriveTurn(1, turn_constant); //turn
-    DriveStraight(1, 0); //drive down the ramp
+    // DriveTurn(1, 0.5); //realign
+    // DriveStraight(1, 3.5); //drive up the ramp
+    // DriveTurn(-1, turn_constant); //turn left
+    // DriveStraight(1, 0.5); //forward a bit
+    // DriveTurn(1, turn_constant); //turn right
+    // DriveStraight(1, 0); //drive into buttons
+    // DriveStraight(-1, 2); //drive backwards
+    // DriveTurn(1, turn_constant); //turn
+    // DriveStraight(1, .5); //forward a bit
+    // DriveTurn(1, turn_constant); //turn
+    // DriveStraight(1, 0); //drive down the ramp
 }
 
 
