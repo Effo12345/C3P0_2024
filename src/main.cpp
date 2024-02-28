@@ -4,8 +4,8 @@
 #include <FEHIO.h>
 #include <FEHMotor.h>
 
-FEHMotor driveL(FEHMotor::Motor0, 9.0);
-FEHMotor driveR(FEHMotor::Motor1, 9.0);
+FEHMotor driveL(FEHMotor::Motor1, 9.0);
+FEHMotor driveR(FEHMotor::Motor0, 9.0);
 
 int main(void) {
     LCD.Clear(BLACK);
@@ -64,18 +64,33 @@ int main(void) {
     /*
         Quad encoder test
     */
-    QuadEncoder test(FEHIO::P0_0, FEHIO::P0_1, 2.5f);
-    QuadEncoder test2(FEHIO::P1_0, FEHIO::P1_1, 2.5f);
+    // QuadEncoder test(FEHIO::P0_0, FEHIO::P0_1, 2.5f);
+    // QuadEncoder test2(FEHIO::P1_0, FEHIO::P1_1, 2.5f);
+
+    // driveL.SetPercent(10);
+
+    // while(test.degrees() < 360.0f) {
+    //     Sleep(50);
+    // }
+
+    // driveL.SetPercent(0);
+    // LCD.WriteAt(test.degrees(), 0, 0);
+    // LCD.WriteAt(test.ticks(), 0, 20);
+    // Sleep(500);
+
+    // driveL.SetPercent(-10);
+    // while(test.degrees() > 0.0f) {
+    //     Sleep(500);
+    // }
+
+    // driveL.SetPercent(0);
+    // LCD.WriteAt(test.degrees(), 0, 0);
+    // LCD.WriteAt(test.ticks(), 0, 20);
 
     driveL.SetPercent(10);
+    driveR.SetPercent(10);
+    Sleep(1000);
 
-    while(test.degrees() < 360.0f) {
-        Sleep(50);
-    }
-
-    driveL.SetPercent(0);
-    LCD.WriteAt(test.degrees(), 0, 0);
-    LCD.WriteAt(test.ticks(), 0, 20);
 
     // starlib::Chassis drive;
 
