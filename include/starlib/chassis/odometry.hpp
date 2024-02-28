@@ -1,6 +1,7 @@
 #pragma once
 
 #include <FEHIO.h>
+#include <FEHUtility.h>
 #include <starlib/chassis/point.hpp>
 #include <memory>
 #include <math.h>

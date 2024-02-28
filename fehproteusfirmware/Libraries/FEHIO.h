@@ -5,7 +5,6 @@
 #include "MK60DZ10.h"
 #include "adc16.h"
 #include <utility>
-#include <FEHLCD.h>
 
 /**
  * @brief Objects to be used with the 32 Flex I/O Pins on the FEH Proteus.
@@ -144,7 +143,8 @@ public:
 
     std::pair<int, int> pinTest();
     int ticks();
-    int distanceTraveled();
+    float degrees();
+    float distanceTraveled();
 
     static int processQuadTicks(int state1, int state2, int &prevState);
 
@@ -152,6 +152,9 @@ private:
     FEHIO::FEHIOPin _pin1;
     FEHIO::FEHIOPin _pin2;
     float diameter {};
+    const float TPR = 636.0f;
+
+    float m_pi = 3.14159f;
 
     QuadEncoder();
     void Initialize( FEHIO::FEHIOPin pin1, FEHIO::FEHIOPin pin2, FEHIO::FEHIOInterruptTrigger trigger );

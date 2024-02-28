@@ -260,6 +260,17 @@ void QuadEncoder::Initialize( FEHIO::FEHIOPin pin1, FEHIO::FEHIOPin pin2, FEHIO:
     // store selected pin numbers in class
     _pin1 = pin1;
     _pin2 = pin2;
+
+    if((int)_pin1 < 8) {
+        quadPins[0].first = pin1;
+        quadPins[0].second = pin2;
+    }
+    else {
+        quadPins[1].first = pin1;
+        quadPins[1].second = pin2;
+    }
+    
+
 	unsigned char trig = (unsigned char)trigger;
     switch( GPIOPorts[ (int)_pin1 ] ) {
         case PortB: {
@@ -268,8 +279,6 @@ void QuadEncoder::Initialize( FEHIO::FEHIOPin pin1, FEHIO::FEHIOPin pin2, FEHIO:
 
             PORT_PCR_REG( PORTB_BASE_PTR, GPIOPinNumbers[ (int)_pin2 ] ) = ( 0 | PORT_PCR_MUX( 1 ) | PORT_PCR_PE_MASK | PORT_PCR_PS_MASK | PORT_PCR_IRQC(trig) | PORT_PCR_PFE_MASK );
             GPIOB_PDDR &= ~GPIO_PDDR_PDD( GPIO_PIN( GPIOPinNumbers[ (int)_pin2 ] ) );
-
-            LCD.WriteAt("Configured GPIO bank B", 0, 100);
 
             enable_irq(INT_PORTB);
             break;
@@ -281,8 +290,6 @@ void QuadEncoder::Initialize( FEHIO::FEHIOPin pin1, FEHIO::FEHIOPin pin2, FEHIO:
             PORT_PCR_REG( PORTC_BASE_PTR, GPIOPinNumbers[ (int)_pin2 ] ) = ( 0 | PORT_PCR_MUX( 1 ) | PORT_PCR_PE_MASK | PORT_PCR_PS_MASK | PORT_PCR_IRQC(trig) | PORT_PCR_PFE_MASK );
             GPIOC_PDDR &= ~GPIO_PDDR_PDD( GPIO_PIN( GPIOPinNumbers[ (int)_pin2 ] ) );
 
-            LCD.WriteAt("Configured GPIO bank C", 0, 120);
-
             enable_irq(INT_PORTC);
             break;
         }
@@ -290,8 +297,11 @@ void QuadEncoder::Initialize( FEHIO::FEHIOPin pin1, FEHIO::FEHIOPin pin2, FEHIO:
 }
 
 std::pair<int, int> QuadEncoder::pinTest() {
-    int pin1 = GPIOA_PDIR & GPIO_PDIR_PDI( GPIO_PIN( GPIOPinNumbers[ (int)quadPins[0].first ] ) );
-    int pin2 = GPIOA_PDIR & GPIO_PDIR_PDI( GPIO_PIN( GPIOPinNumbers[ (int)quadPins[0].second ] ) );
+    // int pin1 = GPIOA_PDIR & GPIO_PDIR_PDI( GPIO_PIN( GPIOPinNumbers[ (int)quadPins[0].first ] ) );
+    // int pin2 = GPIOA_PDIR & GPIO_PDIR_PDI( GPIO_PIN( GPIOPinNumbers[ (int)quadPins[0].second ] ) );
+
+    int pin1 = 0;
+    int pin2 = 0;
 
     return {pin1, pin2};
 }
@@ -324,7 +334,7 @@ int QuadEncoder::processQuadTicks(int state1, int state2, int &prevState) {
 
 //Interrupt port functions
 unsigned long interrupt_counts[32];
-long quadTicks[2] {};
+long quadTicks[2] = {0, 0};
 
 int lastBState {};
 void PORTB_IRQHandler() {
@@ -334,14 +344,12 @@ void PORTB_IRQHandler() {
     int pin1 = 0;
     int pin2 = 0;
     
-    if(PORTB_ISFR & (1<<pins[quadPins[0].first]) != 0 || PORTB_ISFR & (1<<pins[quadPins[0].second]) != 0) {
+    if((PORTB_ISFR & (1<<pins[0])) || (PORTB_ISFR & (1<<pins[1]))) {
         // One of the pins we care about has an interrupt, so process them both
-        pin1 = GPIOB_PDIR & GPIO_PDIR_PDI( GPIO_PIN( GPIOPinNumbers[ (int)quadPins[0].first ] ) );
-        pin2 = GPIOB_PDIR & GPIO_PDIR_PDI( GPIO_PIN( GPIOPinNumbers[ (int)quadPins[0].second ] ) );
+        pin1 = (GPIOB_PDIR & GPIO_PDIR_PDI( GPIO_PIN( GPIOPinNumbers[ (int)quadPins[0].first ] ) )) != 0;
+        pin2 = (GPIOB_PDIR & GPIO_PDIR_PDI( GPIO_PIN( GPIOPinNumbers[ (int)quadPins[0].second ] ) )) != 0;
     }
 
-    LCD.WriteAt(pin1, 0, 160);
-    LCD.WriteAt(pin2, 50, 160);
 
     quadTicks[0] += QuadEncoder::processQuadTicks(pin1, pin2, lastBState);
 
@@ -363,14 +371,11 @@ void PORTC_IRQHandler() {
     int pin1 = 0;
     int pin2 = 0;
     
-    if(PORTC_ISFR & (1<<pins[quadPins[1].first - 8]) != 0 || PORTC_ISFR & (1<<pins[quadPins[1 - 8].second]) != 0) {
+    if(PORTC_ISFR & (1<<pins[quadPins[1].first - 8]) || PORTC_ISFR & (1<<pins[quadPins[1 - 8].second])) {
         // One of the pins we care about has an interrupt, so process them both
-        pin1 = GPIOC_PDIR & GPIO_PDIR_PDI( GPIO_PIN( GPIOPinNumbers[ (int)quadPins[1].first ] ) );
-        pin2 = GPIOC_PDIR & GPIO_PDIR_PDI( GPIO_PIN( GPIOPinNumbers[ (int)quadPins[1].second ] ) );
+        pin1 = (GPIOC_PDIR & GPIO_PDIR_PDI( GPIO_PIN( GPIOPinNumbers[ (int)quadPins[1].first ] ) )) != 0;
+        pin2 = (GPIOC_PDIR & GPIO_PDIR_PDI( GPIO_PIN( GPIOPinNumbers[ (int)quadPins[1].second ] ) )) != 0;
     }
-
-    LCD.WriteAt(pin1, 0, 180);
-    LCD.WriteAt(pin2, 50, 180);
 
     quadTicks[1] += QuadEncoder::processQuadTicks(pin1, pin2, lastCState);
 
@@ -429,14 +434,19 @@ int QuadEncoder::ticks() {
     }
 }
 
+float QuadEncoder::degrees() {
+    // (ticks / tpr) gives number of revolutions
+    // multiply by (360 deg / revolution) to get degrees
+    return ((float)ticks() / TPR) * 360;
+}
+
 // Can't be used if no wheel diameter provided
-int QuadEncoder::distanceTraveled() {
+float QuadEncoder::distanceTraveled() {
     if(diameter <= 0.0f) {
-        LCD.WriteAt("Bad dist traveled", 0, 200);
         return -1;
     }
     else {
-        return ticks() * (diameter * (3.14159f) / 360);
+        return degrees() * (diameter * (m_pi) / 360);
     }
 }
 
