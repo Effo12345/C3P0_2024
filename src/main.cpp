@@ -52,16 +52,15 @@ void waitForLight(float target, float tolerance, float timeout) {
 }
 
 
-int main(void) 
-{
+int main(void) {
     LCD.Clear(BLACK);
 
-    waitForLight(2.0f, 0.2f, 10.0f);
+    waitForLight(1.7f, 0.2f, 10.0f);
 
     // Turn to face ramp and drive up it
     turn(25, right, 0.6);
     drive(25, 1.2);
-    turn(25, left, 0.25);
+    turn(25, left, 0.21);
     drive(50, 2.5);
 
     // Maneuver around passport
@@ -77,9 +76,9 @@ int main(void)
     drive(25, buttonDrive);
 
     // Undo path
-    drive(-25, buttonDrive);
-    turn(25, left, buttonTurn);
-    drive(-25, passportDrive);
+    drive(-25, 2.5f);
+    turn(25, left, 0.6f);
+    drive(-25, 1.4f);
     turn(25, right, 0.4f);
     drive(-25, 4);
     
