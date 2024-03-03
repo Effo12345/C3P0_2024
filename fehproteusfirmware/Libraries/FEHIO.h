@@ -6,6 +6,8 @@
 #include "adc16.h"
 #include <utility>
 
+#include <FEHLCD.h>
+
 /**
  * @brief Objects to be used with the 32 Flex I/O Pins on the FEH Proteus.
  *

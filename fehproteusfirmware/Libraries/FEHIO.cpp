@@ -371,10 +371,13 @@ void PORTC_IRQHandler() {
     int pin1 = 0;
     int pin2 = 0;
     
-    if(PORTC_ISFR & (1<<pins[quadPins[1].first - 8]) || PORTC_ISFR & (1<<pins[quadPins[1 - 8].second])) {
+    if(PORTC_ISFR & (1<<pins[quadPins[1].first - 8]) || PORTC_ISFR & (1<<pins[quadPins[1].second - 8])) {
         // One of the pins we care about has an interrupt, so process them both
         pin1 = (GPIOC_PDIR & GPIO_PDIR_PDI( GPIO_PIN( GPIOPinNumbers[ (int)quadPins[1].first ] ) )) != 0;
         pin2 = (GPIOC_PDIR & GPIO_PDIR_PDI( GPIO_PIN( GPIOPinNumbers[ (int)quadPins[1].second ] ) )) != 0;
+
+        // LCD.WriteAt(pin1, 0, 100);
+        // LCD.WriteAt(pin2, 20, 100);
     }
 
     quadTicks[1] += QuadEncoder::processQuadTicks(pin1, pin2, lastCState);
