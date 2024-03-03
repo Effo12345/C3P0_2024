@@ -2,21 +2,6 @@
 
 namespace starlib {
 
-/**
- * Returns the input degrees in radians
- */
-float Odom::degToRad(float deg) {
-    return deg * (M_PI / 180);
-}
-
-/**
- * Returns the input radians in degrees
- */
-float Odom::radToDeg(float rad) {
-    return rad / (M_PI / 180);
-}
-
-
 void Odom::step() {
     // Get sensor data
     float leftWheel = leftEncoder->distanceTraveled();
@@ -54,9 +39,18 @@ void Odom::step() {
     pos.a = heading;
 
     // Compute average wheel speeds since last update
+    float lDeg = leftEncoder->degrees();
+    float rDeg = rightEncoder->degrees();
+    float deltaLDeg = lDeg - prevLeftDeg;
+    float deltaRDeg = rDeg - prevRightDeg;
+
     float velocityDT = TimeNow() - lastVelocityTime;
-    wheelVel.leftVel = (deltaLeft / velocityDT) * 60;  // in rpm
-    wheelVel.rightVel = (deltaRight / velocityDT) * 60;
+    wheelVel.leftVel = ((deltaLDeg / 360) / velocityDT) * 60;  // in rpm
+    wheelVel.rightVel = ((deltaRDeg / 360) / velocityDT) * 60;
+
+    lastVelocityTime = TimeNow();
+    prevLeftDeg = lDeg;
+    prevRightDeg = rDeg;
 }
 
 
