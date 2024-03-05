@@ -178,10 +178,10 @@ Odom::Velocity Wayfinder::followPath(Odom::Pose pos, Odom::Velocity measuredVel)
     Odom::Velocity targetVelocities = calculateWheelVelocities(targetVelocity, curvature, trackWidth, reversed);
 
     //Control wheel velocities using velocity PID (loop must run every 25 msec)
-    // Odom::Velocity feedForward = (targetVelocities * kV) + (((targetVelocities - lastVelocities) / 0.01) * kA);
-    // lastVelocities = targetVelocities;
+    Odom::Velocity feedForward = (targetVelocities * kV) + (((targetVelocities - lastVelocities) / 0.01) * kA);
+    lastVelocities = targetVelocities;
 
-    // Odom::Velocity feedBack = (targetVelocities - measuredVel) * kP;
+    Odom::Velocity feedBack = (targetVelocities - measuredVel) * kP;
 
 
     std::string output = "Close: " + std::to_string(closestPoint) + " Top: " + std::to_string(points.size());
@@ -197,7 +197,7 @@ Odom::Velocity Wayfinder::followPath(Odom::Pose pos, Odom::Velocity measuredVel)
 
     //Divide by the absolute max velocity the drivetrain is capable of to 
     //normalize the value between [-100, 100].
-    return ((targetVelocities) / absoluteVelocityLimit) * 100;
+    return ((feedForward + feedBack) / absoluteVelocityLimit) * 100;
 }
 
     /**
@@ -224,22 +224,21 @@ Odom::Velocity Wayfinder::followPath(Odom::Pose pos, Odom::Velocity measuredVel)
     * @param set New configurations to define robot movement
     * @param pos The robot's current position
     */
-    // void WayFinder::setNewPath(QPath* qpath, QPath::Settings* set, Odom::QPos pos) {
+    // void Wayfinder::setNewPath(std::vector<Point>& path, std::vector<float>& vel, Odom::Pose pos) {
     //     //Set internal path and settings objects
-    //     path = qpath;
-    //     settings = set;
+    //     // path = qpath;
+    //     // settings = set;
 
-    //     //Reset variables with class scope to their default values
-    //     //The robot's current position is used as the default lookahead point so 
-    //     //the robot doesn't cross the center line during auton in case the algorithm
-    //     //fails to find a lookahead point
-    //     lastClosestPointIndex = 0;
-    //     lastFractionalIndex = 0.0;
-    //     lastLookahead = pos.p;
-    //     lastVelocities = {0, 0};
-    //     error = 0.0;
-    //     limit.reset();
-
+    //     // //Reset variables with class scope to their default values
+    //     // //The robot's current position is used as the default lookahead point so 
+    //     // //the robot doesn't cross the center line during auton in case the algorithm
+    //     // //fails to find a lookahead point
+    //     // lastClosestPointIndex = 0;
+    //     // lastFractionalIndex = 0.0;
+    //     // lastLookahead = pos.p;
+    //     // lastVelocities = {0, 0};
+    //     // error = 0.0;
+    //     // limit.reset();
     // }
 
 }

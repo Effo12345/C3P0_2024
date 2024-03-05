@@ -65,17 +65,17 @@ class Wayfinder {
         0
     };
 
-    float lookaheadDistance = 5.0f;
-    float maxRateChange = 50.0f;
+    float lookaheadDistance = 7.0f;
+    float maxRateChange = 200.0f;
     float trackWidth = 5.502f;
     bool reversed = false;
-    bool useRateLimiter = false;
+    bool useRateLimiter = true;
     float absoluteVelocityLimit = 200.0f;
 
     // Tuning constants
-    float kV;
-    float kA;
-    float kP;
+    float kV = 1.2f;
+    float kA = 0.001f;
+    float kP = 0.1f;
 
     rateLimiter limit;
 
@@ -109,11 +109,13 @@ class Wayfinder {
     Odom::Velocity followPath(Odom::Pose pos, Odom::Velocity measuredVel);
 
 public:
+    Wayfinder(float v, float a, float p);
+
     Odom::Velocity step(Odom::Pose pos, Odom::Velocity vel);
 
     bool isSettled();
 
-    //void setNewPath(QPath* qpath, QPath::Settings* set, Odom::QPos pos);
+    // void setNewPath(std::vector<Point> path, std::vector<float> vel, Odom::Pose pos);
 };
 
 }

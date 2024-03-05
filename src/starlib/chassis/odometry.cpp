@@ -51,6 +51,16 @@ void Odom::step() {
     lastVelocityTime = TimeNow();
     prevLeftDeg = lDeg;
     prevRightDeg = rDeg;
+
+    // Telemtry
+    float x = pos.p.x;
+    float y = pos.p.y;
+    float headingVal = pos.a;
+    std::string pos = std::to_string(x) + " " + std::to_string(y);
+    std::string headingStr = std::to_string(headingVal);
+
+    LCD.WriteAt(pos.c_str(), 0, 0);
+    LCD.WriteAt(headingStr.c_str(), 0, 20);
 }
 
 
