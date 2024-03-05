@@ -115,7 +115,7 @@ public:
 
     bool isSettled();
 
-    // void setNewPath(std::vector<Point> path, std::vector<float> vel, Odom::Pose pos);
+    void setNewPath(std::vector<Point>& path, std::vector<float>& vel, Odom::Pose pos);
 };
 
 }

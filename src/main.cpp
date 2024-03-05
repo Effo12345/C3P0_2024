@@ -105,9 +105,11 @@ int main(void) {
                             {FEHIO::P0_0, FEHIO::P0_1}, 2.5f, -2.715f,
                             {FEHIO::P1_0, FEHIO::P1_1}, 2.5f, 2.715f);
 
-    chassis.setPIDConstants(1.35f, 0.005f, 0.3f);
+    // chassis.setPIDConstants(1.35f, 0.005f, 0.3f);
 
-    chassis.turn(180.0f);
+    // chassis.turn(180.0f);
+
+    chassis.setPPConstants(1.2f, 0.001f, 0.1f);
 
     /*
         Encoder test

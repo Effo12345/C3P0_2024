@@ -2,6 +2,12 @@
 
 namespace starlib {
 
+    Wayfinder::Wayfinder(float v, float a, float p) {
+        kV = v;
+        kA = a;
+        kP = p;
+    }
+
 /**
  * Find the index of the closest point in path to pos using the distance
  * formula.
@@ -224,21 +230,31 @@ Odom::Velocity Wayfinder::followPath(Odom::Pose pos, Odom::Velocity measuredVel)
     * @param set New configurations to define robot movement
     * @param pos The robot's current position
     */
-    // void Wayfinder::setNewPath(std::vector<Point>& path, std::vector<float>& vel, Odom::Pose pos) {
-    //     //Set internal path and settings objects
-    //     // path = qpath;
-    //     // settings = set;
+    void Wayfinder::setNewPath(std::vector<Point>& path, std::vector<float>& vel, Odom::Pose pos) {
+        //Set internal path and settings objects
+        // path = qpath;
+        // settings = set;
 
-    //     // //Reset variables with class scope to their default values
-    //     // //The robot's current position is used as the default lookahead point so 
-    //     // //the robot doesn't cross the center line during auton in case the algorithm
-    //     // //fails to find a lookahead point
-    //     // lastClosestPointIndex = 0;
-    //     // lastFractionalIndex = 0.0;
-    //     // lastLookahead = pos.p;
-    //     // lastVelocities = {0, 0};
-    //     // error = 0.0;
-    //     // limit.reset();
-    // }
+        // //Reset variables with class scope to their default values
+        // //The robot's current position is used as the default lookahead point so 
+        // //the robot doesn't cross the center line during auton in case the algorithm
+        // //fails to find a lookahead point
+        // lastClosestPointIndex = 0;
+        // lastFractionalIndex = 0.0;
+        // lastLookahead = pos.p;
+        // lastVelocities = {0, 0};
+        // error = 0.0;
+        // limit.reset();
+
+        points = path;
+        velocity = vel;
+
+        lastClosestPointIndex = 0;
+        lastFractionalIndex = 0.0;
+        lastLookahead = pos.p;
+        lastVelocities = {0, 0};
+        error = 0.0;
+        limit.reset();
+    }
 
 }

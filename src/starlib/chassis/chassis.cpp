@@ -23,7 +23,19 @@ void Chassis::setPPConstants(float kV, float kA, float kP) {
 }
 
 void Chassis::followNewPath(std::vector<Point>& path, std::vector<float>& vel) {
+    pather->setNewPath(path, vel, odometer->getPos());
+    odometer->tareWheelVelocity();
 
+    do {
+        odometer->step();
+        Odom::Velocity pwr = pather->step(odometer->getPos(), odometer->getVel());
+
+        drive(pwr.leftVel, pwr.rightVel);
+
+        Sleep(10);
+    } while(true);   // Todo: add settled util
+
+    drive(0.0f, 0.0f);
 }
 
 void Chassis::turn(float setpoint) {
