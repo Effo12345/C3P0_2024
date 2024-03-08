@@ -66,7 +66,7 @@ class Wayfinder {
     };
 
     float lookaheadDistance = 7.0f;
-    float maxRateChange = 200.0f;
+    float maxRateChange = 180.0f;
     float trackWidth = 5.502f;
     bool reversed = false;
     bool useRateLimiter = true;
@@ -115,7 +115,8 @@ public:
 
     bool isSettled();
 
-    void setNewPath(std::vector<Point>& path, std::vector<float>& vel, Odom::Pose pos);
+    void setNewPath(std::vector<Point>& path, std::vector<float>& vel, Odom::Pose pos, bool isReversed = false);
+    std::vector<Point> getPath();
 };
 
 }

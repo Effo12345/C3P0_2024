@@ -17,8 +17,6 @@ class Chassis {
 
     float kP, kI, kD;
 
-    void drive(float leftPct, float rightPct);
-
 public:
     Chassis(FEHMotor::FEHMotorPort leftMotor, FEHMotor::FEHMotorPort rightMotor, float motorVoltage,
             std::pair<FEHIO::FEHIOPin, FEHIO::FEHIOPin> encoderL, float diamL, float offsetL, 
@@ -27,8 +25,11 @@ public:
     void setPIDConstants(float pConst, float iConst, float dConst);
     void setPPConstants(float kV, float kA, float kP);
 
-    void followNewPath(std::vector<Point>& path, std::vector<float>& vel);
-    void turn(float angle);
+    std::shared_ptr<Odom> getOdomModel();
+
+    void followNewPath(std::vector<Point> path, std::vector<float> vel, bool isReversed = false);
+    void turn(float angle, float timeOut = 1.0f);
+    void drive(float leftPct, float rightPct);
 };
 
 }

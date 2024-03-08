@@ -230,7 +230,7 @@ Odom::Velocity Wayfinder::followPath(Odom::Pose pos, Odom::Velocity measuredVel)
     * @param set New configurations to define robot movement
     * @param pos The robot's current position
     */
-    void Wayfinder::setNewPath(std::vector<Point>& path, std::vector<float>& vel, Odom::Pose pos) {
+    void Wayfinder::setNewPath(std::vector<Point>& path, std::vector<float>& vel, Odom::Pose pos, bool isReversed) {
         //Set internal path and settings objects
         // path = qpath;
         // settings = set;
@@ -248,6 +248,7 @@ Odom::Velocity Wayfinder::followPath(Odom::Pose pos, Odom::Velocity measuredVel)
 
         points = path;
         velocity = vel;
+        reversed = isReversed;
 
         lastClosestPointIndex = 0;
         lastFractionalIndex = 0.0;
@@ -255,6 +256,10 @@ Odom::Velocity Wayfinder::followPath(Odom::Pose pos, Odom::Velocity measuredVel)
         lastVelocities = {0, 0};
         error = 0.0;
         limit.reset();
+    }
+
+    std::vector<Point> Wayfinder::getPath() {
+        return points;
     }
 
 }

@@ -22,29 +22,39 @@ void Chassis::setPPConstants(float kV, float kA, float kP) {
     pather = std::make_shared<Wayfinder>(kV, kA, kP);
 }
 
-void Chassis::followNewPath(std::vector<Point>& path, std::vector<float>& vel) {
-    pather->setNewPath(path, vel, odometer->getPos());
+std::shared_ptr<Odom> Chassis::getOdomModel() {
+    return odometer;
+}
+
+void Chassis::followNewPath(std::vector<Point> path, std::vector<float> vel, bool isReversed) {
+    Odom::Pose startPos = odometer->getPos();
+    pather->setNewPath(path, vel, startPos, isReversed);
     odometer->tareWheelVelocity();
+    
+    Odom::Velocity velocity;
+    Odom::Pose pos;
 
     do {
         odometer->step();
-        Odom::Velocity pwr = pather->step(odometer->getPos(), odometer->getVel());
+        velocity = odometer->getVel();
+        pos = odometer->getPos();
+        Odom::Velocity pwr = pather->step(pos, velocity);
 
         drive(pwr.leftVel, pwr.rightVel);
 
         Sleep(10);
-    } while(true);   // Todo: add settled util
+    } while(std::fabs(velocity.leftVel) > 2.0f || pos.p.distanceTo(startPos.p) < 2.0f);   // Todo: add settled util
 
     drive(0.0f, 0.0f);
 }
 
-void Chassis::turn(float setpoint) {
+void Chassis::turn(float setpoint, float timeOut) {
     float error = 2.0f;
     float prevError;
     float integral;
 
     float start = TimeNow();
-    while(true/*std::fabs(error) > 1.0 && TimeNow() - start < 100000*/) {
+    while(std::fabs(error) > 1.0f && TimeNow() - start < timeOut) {
         const float Ki_active_t = 10;
         const float Ki_limit_t  = 100000;
 
@@ -75,13 +85,12 @@ void Chassis::turn(float setpoint) {
         // LCD.WriteAt(errorOut.c_str(), 0, 20);
         // LCD.WriteAt(powerOut.c_str(), 0, 40);
 
-        //drive(power, -power);
+        drive(power, -power);
 
         Sleep(10);
     }
 
     drive(0.0f, 0.0f);
-    //tracking.reset();
 }
 
 void Chassis::drive(float leftPct, float rightPct) {
