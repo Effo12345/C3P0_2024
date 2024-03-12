@@ -2,15 +2,18 @@
 
 #include <cmath>
 #include <algorithm>
+#include <FEHUtility.h>
 
 namespace starlib {
 
 //Rate limiter used in pure pursuit algorithm
 class rateLimiter {
-  float output = 0.0;      //Output value (must persist between function calls)
+  float output = 0.0f;      //Output value (must persist between function calls)
+  float prevTime {};
 public:
   float constrain(float input, float maxRateChange);
   void reset();
+  float getDeltaTime();
 };
 
 

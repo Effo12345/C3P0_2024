@@ -183,8 +183,8 @@ Odom::Velocity Wayfinder::followPath(Odom::Pose pos, Odom::Velocity measuredVel)
 
     Odom::Velocity targetVelocities = calculateWheelVelocities(targetVelocity, curvature, trackWidth, reversed);
 
-    //Control wheel velocities using velocity PID (loop must run every 25 msec)
-    Odom::Velocity feedForward = (targetVelocities * kV) + (((targetVelocities - lastVelocities) / 0.01) * kA);
+    //Control wheel velocities using velocity PID (loop must run every 10 msec)
+    Odom::Velocity feedForward = (targetVelocities * kV) + (((targetVelocities - lastVelocities) / limit.getDeltaTime()) * kA);
     lastVelocities = targetVelocities;
 
     Odom::Velocity feedBack = (targetVelocities - measuredVel) * kP;

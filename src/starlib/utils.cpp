@@ -3,7 +3,8 @@
 namespace starlib {
 
 float rateLimiter::constrain(float input, float maxRateChange) {
-    float maxChange = (0.01) * maxRateChange;
+    float maxChange = (TimeNow() - prevTime) * maxRateChange;
+    prevTime = TimeNow();
     float temp = input - output;
     temp = clamp(temp, -maxChange, maxChange);
 
@@ -12,7 +13,12 @@ float rateLimiter::constrain(float input, float maxRateChange) {
 }
 
 void rateLimiter::reset() {
-    output = 0.0;
+    output = 0.0f;
+    prevTime = TimeNow();
+}
+
+float rateLimiter::getDeltaTime() {
+    return TimeNow() - prevTime;
 }
 
 /**
