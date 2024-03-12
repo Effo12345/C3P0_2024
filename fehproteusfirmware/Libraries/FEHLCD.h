@@ -85,6 +85,8 @@ public:
      */
     void PrintLogo(int x, int y);
 
+    void PrintFieldImage(int x, int y);
+
     /**
      * @brief Access function to private member {@code} _Initialize()
      * 

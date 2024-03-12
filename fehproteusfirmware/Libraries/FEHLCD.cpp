@@ -532,6 +532,26 @@ void FEHLCD::PrintLogo(int x, int y)
 
 }
 
+void FEHLCD::PrintFieldImage(int x, int y) {
+    SetDrawRegion(x, y, 120, 240);
+    int fieldLength = sizeof(fieldImage) / sizeof(fieldImage[0]);
+    for(int i = 0; i < fieldLength; i += 2) {
+        for(int j = 0; j < fieldImage[i]; j++) {
+            unsigned char r, g, b;
+            if(fieldImage[i + 1] == 1) {
+                r = 255; g = 255; b = 255;
+            }
+            else {
+                r = 0; g = 0; b = 0;
+            }
+            _forecolor = ConvertRGBColorTo16Bit(r, g, b);
+
+            SetRegisterColorValues();
+            _ForePixel();
+        } 
+    }
+}
+
 void FEHLCD::SetOrientation(FEHLCDOrientation orientation)
 {
     _orientation = orientation;
