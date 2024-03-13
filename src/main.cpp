@@ -21,37 +21,27 @@ AnalogInputPin cds(FEHIO::P3_7);
 
 int main(void) {
     std::shared_ptr<starlib::Interface> gui = std::make_shared<starlib::Interface>();
-    gui->init();
-
-    int tmpX, tmpY;
-    while(!LCD.Touch(&tmpX, &tmpY)) {
-        gui->update();
-        Sleep(10);
-    }
-
-    while(true) {
-        gui->update(true);
-        Sleep(10);
-    }
 
     starlib::Chassis chassis(FEHMotor::Motor1, FEHMotor::Motor0, 9.0f, 
                             {FEHIO::P0_0, FEHIO::P0_1}, 2.5f, -2.8755f,
-                            {FEHIO::P1_0, FEHIO::P1_1}, 2.5f, 2.75f);
+                            {FEHIO::P1_0, FEHIO::P1_1}, 2.5f, 2.75f,
+                            gui);
 
     chassis.setPIDConstants(1.35f, 0.005f, 0.3f);
     chassis.setPPConstants(1.2f, 0.001f, 0.1f);
     chassis.getOdomModel()->setPos({{6.14f, -24.18f}, -45.0f});
 
     FEHFile* posOut = SD.FOpen("moves.txt", "w");
+    gui->init();
 
     // chassis.turn(45.0f);
     // Sleep(100);
 
-    float startRun = TimeNow();
-    while(cds.Value() > 1.1f && (TimeNow() - startRun) < 30.0f) {
-        LCD.WriteAt(cds.Value(), 0 , 160);
-        Sleep(100);
-    }
+    // float startRun = TimeNow();
+    // while(cds.Value() > 1.1f && (TimeNow() - startRun) < 30.0f) {
+    //     // LCD.WriteAt(cds.Value(), 0 , 160);
+    //     Sleep(100);
+    // }
 
     starlib::Odom::Pose position = chassis.getOdomModel()->getPos();
     SD.FPrintf(posOut, "Start");
@@ -86,12 +76,16 @@ int main(void) {
     });
     Sleep(100);
 
+    gui->pause();
+
     position = chassis.getOdomModel()->getPos();
     SD.FPrintf(posOut, "To ramp");
     SD.FPrintf(posOut, " %f %f %f\n", position.p.x, position.p.y, position.a);
 
     chassis.turn(2.3f);
     Sleep(100);
+
+    gui->pause();
 
     position = chassis.getOdomModel()->getPos();
     SD.FPrintf(posOut, "Align ramp");
@@ -100,9 +94,14 @@ int main(void) {
     chassis.drive(50.0f, 50.0f);
     while(chassis.getOdomModel()->getPos().p.y < 9.0f) {
         chassis.getOdomModel()->step();
+        gui->setPos(chassis.getOdomModel()->getPos());
+        gui->update();
         Sleep(10);
     }
+    chassis.drive(0.0f, 0.0f);
     Sleep(100);
+
+    gui->pause();
 
     position = chassis.getOdomModel()->getPos();
     SD.FPrintf(posOut, "Ramp top");
@@ -110,6 +109,8 @@ int main(void) {
 
     chassis.turn(35.0f);
     Sleep(100);
+
+    gui->pause();
 
     position = chassis.getOdomModel()->getPos();
     SD.FPrintf(posOut, "Light align");
@@ -141,6 +142,8 @@ int main(void) {
     });
     Sleep(100);
 
+    gui->pause();
+
     position = chassis.getOdomModel()->getPos();
     SD.FPrintf(posOut, "Light path");
     SD.FPrintf(posOut, " %f %f %f\n", position.p.x, position.p.y, position.a);
@@ -150,15 +153,17 @@ int main(void) {
     float lightValue = cds.Value();
 
     if(lightValue > 0.9f) { // Blue light
-        LCD.Clear(BLUE);
+        // LCD.Clear(BLUE);
+        gui->setColor(BLUE);
         isBlue = true;
     }
     else {
-        LCD.Clear(RED);
+        // LCD.Clear(RED);
+        gui->setColor(RED);
         isRed = true;
     }
 
-    LCD.WriteAt(lightValue, 0, 160);
+    // LCD.WriteAt(lightValue, 0, 160);
 
 
     chassis.followNewPath({
@@ -188,12 +193,16 @@ int main(void) {
     }, true);
     Sleep(100);
 
+    gui->pause();
+
     position = chassis.getOdomModel()->getPos();
     SD.FPrintf(posOut, "Luggage path");
     SD.FPrintf(posOut, " %f %f %f\n", position.p.x, position.p.y, position.a);
 
     chassis.turn(3.0f);
     Sleep(100);
+
+    gui->pause();
 
     position = chassis.getOdomModel()->getPos();
     SD.FPrintf(posOut, " Button turn");
@@ -261,6 +270,8 @@ int main(void) {
     }
     Sleep(100);
 
+    gui->pause();
+
     chassis.followNewPath({
         {4.516144859813084, 27.89430033893229},
         {4.036361579479535, 26.04973515421361},
@@ -317,6 +328,8 @@ int main(void) {
         0
     }, true);
     Sleep(100);
+
+    gui->pause();
 
     SD.FClose(posOut);
 
