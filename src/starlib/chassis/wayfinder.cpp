@@ -183,23 +183,23 @@ Odom::Velocity Wayfinder::followPath(Odom::Pose pos, Odom::Velocity measuredVel)
 
     Odom::Velocity targetVelocities = calculateWheelVelocities(targetVelocity, curvature, trackWidth, reversed);
 
-    //Control wheel velocities using velocity PID (loop must run every 10 msec)
-    Odom::Velocity feedForward = (targetVelocities * kV) + (((targetVelocities - lastVelocities) / limit.getDeltaTime()) * kA);
+    //Control wheel velocities using velocity PID (loop must run every 25 msec)
+    Odom::Velocity feedForward = (targetVelocities * kV) + (((targetVelocities - lastVelocities) / 0.0144f) * kA);
     lastVelocities = targetVelocities;
 
     Odom::Velocity feedBack = (targetVelocities - measuredVel) * kP;
 
 
-    std::string output = "Close: " + std::to_string(closestPoint) + " Top: " + std::to_string(points.size());
-    LCD.WriteAt(output.c_str(), 0, 40);
-    std::string lookaheadOutput = "L: (" + std::to_string(lookaheadPoint.x) + ", " + std::to_string(lookaheadPoint.y) + ")";
-    LCD.WriteAt(lookaheadOutput.c_str(), 0, 60);
-    std::string curvatureOutput = "C: " + std::to_string(curvature);
-    LCD.WriteAt(curvatureOutput.c_str(), 0, 80);
-    std::string targetVelocityOutput = "T: " + std::to_string(targetVelocity);
-    LCD.WriteAt(targetVelocityOutput.c_str(), 0, 100);
-    std::string velocityOutput = "V: (" + std::to_string(targetVelocities.leftVel) + ", " + std::to_string(targetVelocities.rightVel) + ")";
-    LCD.WriteAt(velocityOutput.c_str(), 0, 120);
+    // std::string output = "Close: " + std::to_string(closestPoint) + " Top: " + std::to_string(points.size());
+    // LCD.WriteAt(output.c_str(), 0, 40);
+    // std::string lookaheadOutput = "L: (" + std::to_string(lookaheadPoint.x) + ", " + std::to_string(lookaheadPoint.y) + ")";
+    // LCD.WriteAt(lookaheadOutput.c_str(), 0, 60);
+    // std::string curvatureOutput = "C: " + std::to_string(curvature);
+    // LCD.WriteAt(curvatureOutput.c_str(), 0, 80);
+    // std::string targetVelocityOutput = "T: " + std::to_string(targetVelocity);
+    // LCD.WriteAt(targetVelocityOutput.c_str(), 0, 100);
+    // std::string velocityOutput = "V: (" + std::to_string(targetVelocities.leftVel) + ", " + std::to_string(targetVelocities.rightVel) + ")";
+    // LCD.WriteAt(velocityOutput.c_str(), 0, 120);
 
     //Divide by the absolute max velocity the drivetrain is capable of to 
     //normalize the value between [-100, 100].
