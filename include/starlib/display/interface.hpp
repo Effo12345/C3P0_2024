@@ -16,9 +16,10 @@ class Interface {
     float canvasScaleY = 36.0f;
     int robotRadius = 4;
 
+    bool isInitialized = false;
+
     Odom::Pose pos {};
-    float driveLPwr {};
-    float driveRPwr {};
+    Odom::Velocity wheelVels {};
     float ambientLight {};
     float currentLight {};
     int lightColor = BLACK;
@@ -42,8 +43,11 @@ public:
     void update(bool full = false);
 
     void setPos(const Odom::Pose& position);
+    void setMotorSpeeds(const Odom::Velocity& vels);
+    void setColor(int color);
 
     void pause();
+    void clear();
 };
 
 }

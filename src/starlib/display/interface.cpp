@@ -26,19 +26,19 @@ namespace starlib {
         LCD.WriteAt('y', 210, 0);
         LCD.WriteAt("theta", 260, 0);
 
-        LCD.WriteAt(pos.p.x, 120, 20);
-        LCD.WriteAt(pos.p.y, 190, 20);
-        LCD.WriteAt(pos.a, 260, 20);
+        LCD.WriteAt(std::to_string(pos.p.x).substr(0, 5).c_str(), 118, 20);
+        LCD.WriteAt(std::to_string(pos.p.y).substr(0, 5).c_str(), 182, 20);
+        LCD.WriteAt(std::to_string(pos.a).substr(0, 6).c_str(), 248, 20);
     }
 
     void Interface::writeDrivePower() {
         LCD.SetFontColor(WHITE);
 
         LCD.WriteAt("driveL", 130, 60);
-        LCD.WriteAt("driveR", 235, 60);
+        LCD.WriteAt("driveR", 230, 60);
 
-        LCD.WriteAt(driveLPwr, 135, 80);
-        LCD.WriteAt(driveRPwr, 240, 80);
+        LCD.WriteAt(wheelVels.leftVel, 135, 80);
+        LCD.WriteAt(wheelVels.rightVel, 235, 80);
     }
 
     void Interface::writeLightLevel() {
@@ -72,24 +72,47 @@ namespace starlib {
     void Interface::writeBatteryVoltage() {
         LCD.SetFontColor(WHITE);
 
-        std::string batteryOutput = "Battery: " + std::to_string(Battery.Voltage()).substr(0, 5);
+        std::string batteryOutput = "Battery: " + std::to_string(Battery.Voltage()).substr(0, 5) + " V";
         LCD.WriteAt(batteryOutput.c_str(), 125, 220);
     }
+
 
     void Interface::setPos(const Odom::Pose& position) {
         pos = position;
     }
 
+    void Interface::setMotorSpeeds(const Odom::Velocity& vels) {
+        wheelVels = vels;
+    }
+
+    void Interface::setColor(int color) {
+        lightColor = color;
+    }
+
 
     void Interface::pause() {
+        if(!isInitialized)
+            return;
+
+        LCD.Clear(BLACK);
         int tmpX, tmpY;
         while(!LCD.Touch(&tmpX, &tmpY)) {
             update(true);
             Sleep(10);
         }
+
+        Sleep(250);
+        LCD.ClearBuffer();
+    }
+
+    void Interface::clear() {
+        LCD.Clear(BLACK);
     }
 
     void Interface::update(bool full) {
+        if(!isInitialized)
+            return;
+
         startRndrTime = TimeNow();
 
         if(full) {
@@ -108,7 +131,8 @@ namespace starlib {
 
     void Interface::init() {
         LCD.Clear(BLACK);
-        drawImage();
+        isInitialized = true;
+        // drawImage();
     }
 
 }

@@ -53,10 +53,10 @@ void Odom::step() {
     prevRightDeg = rDeg;
 
     // Telemtry
-    std::string pose = std::to_string(pos.p.x) + " " + std::to_string(pos.p.y);
-    std::string headingStr = std::to_string(pos.a);
+    // std::string pose = std::to_string(pos.p.x) + " " + std::to_string(pos.p.y);
+    // std::string headingStr = std::to_string(pos.a);
 
-    LCD.WriteAt((pose + " " + headingStr).c_str(), 0, 0);
+    // LCD.WriteAt((pose + " " + headingStr).c_str(), 0, 0);
     // LCD.WriteAt(headingStr.c_str(), 0, 20);
 }
 

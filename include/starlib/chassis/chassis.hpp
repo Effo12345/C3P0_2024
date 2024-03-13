@@ -5,6 +5,7 @@
 
 #include <starlib/chassis/odometry.hpp>
 #include <starlib/chassis/wayfinder.hpp>
+#include <starlib/display/interface.hpp>
 
 namespace starlib {
     
@@ -15,12 +16,15 @@ class Chassis {
     std::shared_ptr<Odom> odometer = std::make_shared<Odom>();
     std::shared_ptr<Wayfinder> pather;
 
+    std::shared_ptr<Interface> gui;
+
     float kP, kI, kD;
 
 public:
     Chassis(FEHMotor::FEHMotorPort leftMotor, FEHMotor::FEHMotorPort rightMotor, float motorVoltage,
             std::pair<FEHIO::FEHIOPin, FEHIO::FEHIOPin> encoderL, float diamL, float offsetL, 
-            std::pair<FEHIO::FEHIOPin, FEHIO::FEHIOPin> encoderR, float diamR, float offsetR);
+            std::pair<FEHIO::FEHIOPin, FEHIO::FEHIOPin> encoderR, float diamR, float offsetR,
+            const std::shared_ptr<Interface> interface);
 
     void setPIDConstants(float pConst, float iConst, float dConst);
     void setPPConstants(float kV, float kA, float kP);
