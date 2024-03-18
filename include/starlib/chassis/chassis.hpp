@@ -7,6 +7,8 @@
 #include <starlib/chassis/wayfinder.hpp>
 #include <starlib/display/interface.hpp>
 
+using encoderPair = std::pair<FEHIO::FEHIOPin, FEHIO::FEHIOPin>;
+
 namespace starlib {
     
 class Chassis {
@@ -22,8 +24,8 @@ class Chassis {
 
 public:
     Chassis(FEHMotor::FEHMotorPort leftMotor, FEHMotor::FEHMotorPort rightMotor, float motorVoltage,
-            std::pair<FEHIO::FEHIOPin, FEHIO::FEHIOPin> encoderL, float diamL, float offsetL, 
-            std::pair<FEHIO::FEHIOPin, FEHIO::FEHIOPin> encoderR, float diamR, float offsetR,
+            encoderPair encoderL, float diamL, float offsetL, 
+            encoderPair encoderR, float diamR, float offsetR,
             const std::shared_ptr<Interface> interface);
 
     void setPIDConstants(float pConst, float iConst, float dConst);
