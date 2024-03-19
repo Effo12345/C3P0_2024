@@ -19,7 +19,7 @@ void config() {
 int main(void) {
     config();
 
-    checkpoint2();
+    checkpoint3();
 
 	return 0;
 }
