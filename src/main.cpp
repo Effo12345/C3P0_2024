@@ -14,11 +14,11 @@ void config() {
     chassis->setPPConstants(1.2f, 0.001f, 0.1f);
     chassis->getOdomModel()->setPos({{11.25f, -29.22f}, 135.0f});
 
-    // fuelArm.SetMin(0);
-    // fuelArm.SetMax(255);
+    fuelArm.SetMin(0);
+    fuelArm.SetMax(255);
 
     // Uncomment this to call RCS init menu on startup
-    // RCS.InitializeTouchMenu("C3Hp3wz3E");
+    RCS.InitializeTouchMenu("C3Hp3wz3E");
 
     gui->init();
 }
