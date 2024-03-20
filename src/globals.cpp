@@ -11,3 +11,5 @@ std::shared_ptr<Chassis> chassis = std::make_shared<Chassis>(
 );
 
 AnalogInputPin cds(FEHIO::P3_7);
+
+FEHServo fuelArm(FEHServo::Servo0);
