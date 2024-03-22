@@ -58,7 +58,6 @@ public:
     void withSensors(const QuadEncoder trackL, const QuadEncoder trackR);
     void withOffsets(const float offsetL, const float offsetR);
     void setPos(Pose pose, bool radians = false);
-    void tareWheelVelocity();
 
     void step();
 

@@ -32,7 +32,6 @@ std::shared_ptr<Odom> Chassis::getOdomModel() {
 void Chassis::followNewPath(std::vector<Point> path, std::vector<float> vel, bool isReversed) {
     Odom::Pose startPos = odometer->getPos();
     pather->setNewPath(path, vel, startPos, isReversed);
-    odometer->tareWheelVelocity();
     
     Odom::Velocity velocity;
     Odom::Pose pos;

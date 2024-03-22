@@ -78,10 +78,6 @@ void Odom::setPos(Pose pose, bool radians) {
         pos = {pose.p, degToRad(pose.a)};
 }
 
-void Odom::tareWheelVelocity() {
-    lastVelocityTime = TimeNow();
-}
-
 Odom::Pose Odom::getPos(bool radians) {
     if (radians) 
         return pos;
