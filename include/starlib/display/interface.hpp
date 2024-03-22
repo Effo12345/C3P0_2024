@@ -45,6 +45,7 @@ public:
     void setPos(const Odom::Pose& position);
     void setMotorSpeeds(const Odom::Velocity& vels);
     void setColor(int color);
+    void setLightLevel(float light);
 
     void pause();
     void clear();

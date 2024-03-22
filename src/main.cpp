@@ -18,7 +18,7 @@ void config() {
     fuelArm.SetMax(255);
 
     // Uncomment this to call RCS init menu on startup
-    // RCS.InitializeTouchMenu("C3Hp3wz3E");
+    RCS.InitializeTouchMenu("C3Hp3wz3E");
 
     gui->init();
 }

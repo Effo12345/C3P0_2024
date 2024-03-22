@@ -89,6 +89,10 @@ namespace starlib {
         lightColor = color;
     }
 
+    void Interface::setLightLevel(float light) {
+        currentLight = light;
+    }
+
 
     void Interface::pause() {
         if(!isInitialized)
