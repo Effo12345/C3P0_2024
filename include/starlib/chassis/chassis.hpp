@@ -36,6 +36,7 @@ public:
     void followNewPath(std::vector<Point> path, std::vector<float> vel, bool isReversed = false);
     void turn(float angle, float timeOut = 1.0f);
     void drive(float leftPct, float rightPct);
+    void driveFor(float pwr, float time);
 };
 
 }

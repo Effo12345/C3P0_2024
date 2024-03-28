@@ -115,4 +115,16 @@ void Chassis::drive(float leftPct, float rightPct) {
     gui->setMotorSpeeds({leftPct, rightPct});
 }
 
+void Chassis::driveFor(float pwr, float time) {
+    drive(pwr, pwr);
+
+    float start = TimeNow();
+    while(TimeNow() - start < time) {
+        odometer->step();
+        Sleep(10);
+    }
+
+    drive(0.0f, 0.0f);
+}
+
 }
