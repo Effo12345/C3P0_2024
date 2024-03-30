@@ -17,6 +17,26 @@ namespace starlib {
     void Interface::drawRobot() {
         LCD.SetFontColor(BLUE);
         LCD.FillCircle(canvasX(pos.p.x) + imgCols / 2.0f, canvasY(pos.p.y) + imgRows / 2.0f, robotRadius);
+
+        int vectorLength = 7;
+
+        int xLength = vectorLength * cos(-pos.a * (M_PI / 180) + M_PI/2);
+        int yLength = vectorLength * sin(-pos.a * (M_PI / 180) + M_PI/2);
+
+        LCD.DrawLine(canvasX(pos.p.x) + imgCols / 2.0f, canvasY(pos.p.y) + imgRows / 2.0f,
+                     canvasX(pos.p.x + xLength) + imgCols / 2.0f, canvasY(pos.p.y + yLength) + imgRows / 2.0f
+        );
+
+        int orthogonalXLength = (vectorLength / 2) * cos(-pos.a * (M_PI / 180));
+        int orthogonalYLength = (vectorLength / 2) * sin(-pos.a * (M_PI / 180));
+
+        LCD.DrawLine(canvasX(pos.p.x) + imgCols / 2.0f, canvasY(pos.p.y) + imgRows / 2.0f,
+                     canvasX(pos.p.x + orthogonalXLength) + imgCols / 2.0f, canvasY(pos.p.y + orthogonalYLength) + imgRows / 2.0f
+        );
+
+        LCD.DrawLine(canvasX(pos.p.x) + imgCols / 2.0f, canvasY(pos.p.y) + imgRows / 2.0f,
+                     canvasX(pos.p.x - orthogonalXLength) + imgCols / 2.0f, canvasY(pos.p.y - orthogonalYLength) + imgRows / 2.0f
+        );
     }
 
     void Interface::writePos() {
