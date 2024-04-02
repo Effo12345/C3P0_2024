@@ -1,28 +1,28 @@
 #pragma once
 
 #include <FEHIO.h>
-#include <starlib/display/interface.hpp>
+#include <memory>
 
 namespace starlib {
 
     class Cds {
-        std::shared_ptr<AnalogInputPin> cds;
-        std::shared_ptr<Interface> gui;
+        std::shared_ptr<AnalogInputPin> cell;
 
-        float ambient;
-        int measuredColor;
+        float ambient {};
+        int measuredColor = BLACK;
 
         float sample(const int numSamples = 10);
     public:
-        Cds(const FEHIO::FEHIOPin& pin, const std::shared_ptr<Interface> interface);
+        Cds(const FEHIO::FEHIOPin& pin);
 
         void sampleAmbient();
         void sampleLight(float redThreshold);
-        void awaitStartingLight(float threshold);
+        void awaitStartingLight(float threshold, float timeout = 30.0f);
 
 
         int getColor();
         float getOffsetValue();
+        float getAmbientSample();
     };
 
 }

@@ -2,6 +2,7 @@
 
 #include <FEHLCD.h>
 #include <starlib/chassis/odometry.hpp>
+#include <starlib/cds.hpp>
 #include <FEHBattery.h>
 #include <FEHUtility.h>
 
@@ -9,12 +10,12 @@
 namespace starlib {
 
 class Interface {
-    int imgRows = 240;
-    int imgCols = 120;
+    const int imgRows = 240;
+    const int imgCols = 120;
 
-    float canvasScaleX = 18.0f;
-    float canvasScaleY = 36.0f;
-    int robotRadius = 4;
+    const float canvasScaleX = 18.0f;
+    const float canvasScaleY = 36.0f;
+    const int robotRadius = 4;
 
     bool isInitialized = false;
 
@@ -27,6 +28,8 @@ class Interface {
     float startCtrlTime {};
     float startRndrTime {};
 
+    std::shared_ptr<Cds> cdsCell;
+
     void drawImage();
     void drawRobot();
 
@@ -38,7 +41,11 @@ class Interface {
 
     float canvasX(float x);
     float canvasY(float y);
+
+    void fetchCdsValues();
 public:
+    void withCdsCell(std::shared_ptr<Cds> cds);
+
     void init();
     void update(bool full = false);
 

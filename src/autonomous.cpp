@@ -315,13 +315,13 @@ void checkpoint3() {
     // RCS example
     //
 
-    float startRun = TimeNow();
-    while(cds.Value() > 1.3f && (TimeNow() - startRun) < 30.0f) {
-        // LCD.WriteAt(cds.Value(), 0 , 160);
-        gui->setLightLevel(cds.Value());
-        gui->update();
-        Sleep(100);
-    }
+    // float startRun = TimeNow();
+    // while(cds.Value() > 1.3f && (TimeNow() - startRun) < 30.0f) {
+    //     // LCD.WriteAt(cds.Value(), 0 , 160);
+    //     gui->setLightLevel(cds.Value());
+    //     gui->update();
+    //     Sleep(100);
+    // }
 
     int leverNum = RCS.GetCorrectLever();
 
@@ -609,18 +609,18 @@ void checkpoint2() {
 
     bool isBlue = false;
     bool isRed = false;
-    float lightValue = cds.Value();
+    // float lightValue = cds.Value();
 
-    if(lightValue > 0.9f) { // Blue light
-        // LCD.Clear(BLUE);
-        gui->setColor(BLUE);
-        isBlue = true;
-    }
-    else {
-        // LCD.Clear(RED);
-        gui->setColor(RED);
-        isRed = true;
-    }
+    // if(lightValue > 0.9f) { // Blue light
+    //     // LCD.Clear(BLUE);
+    //     gui->setColor(BLUE);
+    //     isBlue = true;
+    // }
+    // else {
+    //     // LCD.Clear(RED);
+    //     gui->setColor(RED);
+    //     isRed = true;
+    // }
 
     // LCD.WriteAt(lightValue, 0, 160);
 

@@ -62,6 +62,8 @@ namespace starlib {
     }
 
     void Interface::writeLightLevel() {
+        fetchCdsValues();
+
         LCD.SetFontColor(WHITE);
 
         LCD.WriteAt("Amb", 135, 120);
@@ -113,6 +115,14 @@ namespace starlib {
         currentLight = light;
     }
 
+    void Interface::fetchCdsValues() {
+        if(cdsCell != nullptr) {
+            ambientLight = cdsCell->getAmbientSample();
+            currentLight = cdsCell->getOffsetValue();
+            lightColor = cdsCell->getColor();
+        }
+    }
+
 
     void Interface::pause() {
         if(!isInitialized)
@@ -157,6 +167,10 @@ namespace starlib {
         LCD.Clear(BLACK);
         isInitialized = true;
         // drawImage();
+    }
+
+    void Interface::withCdsCell(std::shared_ptr<Cds> cds) {
+        cdsCell = cds;
     }
 
 }

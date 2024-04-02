@@ -18,6 +18,8 @@ void config() {
     fuelArm.SetMin(875);
     fuelArm.SetMax(2272);
 
+    gui->withCdsCell(cds);
+
     // Uncomment this to call RCS init menu on startup
     // RCS.InitializeTouchMenu("C3Hp3wz3E");
 
@@ -28,8 +30,14 @@ int main(void) {
     config();
 
     // checkpoint3();
-    checkpoint4();
+    // checkpoint4();
     
+    cds->sampleAmbient();
+    gui->pause();
+    
+    cds->sampleLight(0.8f);
+    gui->pause();
+
 
 	return 0;
 }
