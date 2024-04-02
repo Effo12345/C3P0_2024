@@ -35,7 +35,7 @@ int main(void) {
     cds->sampleAmbient();
     gui->pause();
     
-    cds->sampleLight(0.8f);
+    cds->sampleLight();
     gui->pause();
 
 

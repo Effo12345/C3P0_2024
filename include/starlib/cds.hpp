@@ -5,19 +5,23 @@
 
 namespace starlib {
 
-    class Cds {
-        std::shared_ptr<AnalogInputPin> cell;
+    class Cds : AnalogInputPin {
 
         float ambient {};
         int measuredColor = BLACK;
 
+        float redMin {};
+        float startMin {};
+        float timeout {};
+
         float sample(const int numSamples = 10);
     public:
-        Cds(const FEHIO::FEHIOPin& pin);
+        Cds(const FEHIO::FEHIOPin& pin, float redThreshold, float startThreshold,
+            float startTimeout = 30.0f);
 
         void sampleAmbient();
-        void sampleLight(float redThreshold);
-        void awaitStartingLight(float threshold, float timeout = 30.0f);
+        void sampleLight();
+        void awaitStartingLight();
 
 
         int getColor();

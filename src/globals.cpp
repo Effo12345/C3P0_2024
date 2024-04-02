@@ -10,6 +10,6 @@ std::shared_ptr<Chassis> chassis = std::make_shared<Chassis>(
     gui
 );
 
-std::shared_ptr<Cds> cds = std::make_shared<Cds>(FEHIO::P3_7);
+std::shared_ptr<Cds> cds = std::make_shared<Cds>(FEHIO::P3_7, 0.8f, 1.2f, 30.0f);
 
 FEHServo fuelArm(FEHServo::Servo0);

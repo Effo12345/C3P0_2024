@@ -2,14 +2,15 @@
 
 namespace starlib {
 
-    Cds::Cds(const FEHIO::FEHIOPin& pin) {
-        cell = std::make_shared<AnalogInputPin>(pin);
-    }
+    Cds::Cds(const FEHIO::FEHIOPin& pin, float redThreshold, float startThreshold,
+             float startTimeout) 
+    : AnalogInputPin(pin), redMin{redThreshold}, startMin{startThreshold},
+      timeout{startTimeout} {}
 
     float Cds::sample(const int numSamples) {
         float runningSum {};
         for(int i = 0; i < numSamples; i++) {
-            runningSum += cell->Value();
+            runningSum += Value();
             Sleep(10);
         }
 
@@ -21,11 +22,11 @@ namespace starlib {
         ambient = sample(numSamples);
     }
 
-    void Cds::sampleLight(float redThreshold) {
+    void Cds::sampleLight() {
         const int numSamples = 10;
         float lightLevel = ambient - sample(numSamples);
 
-        if(lightLevel > redThreshold) {
+        if(lightLevel > redMin) {
             measuredColor = RED;
         }
         else {
@@ -33,9 +34,9 @@ namespace starlib {
         }
     }
 
-    void Cds::awaitStartingLight(float threshold, float timeout) {
+    void Cds::awaitStartingLight() {
         float startTime = TimeNow();
-        while(getOffsetValue() < threshold && TimeNow() - startTime < timeout) {
+        while(getOffsetValue() < startMin && TimeNow() - startTime < timeout) {
             Sleep(50);
         }
     }
@@ -46,7 +47,7 @@ namespace starlib {
     }
 
     float Cds::getOffsetValue() {
-        return ambient - cell->Value();
+        return ambient - Value();
     }
 
     float Cds::getAmbientSample() {
