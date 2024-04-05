@@ -66,7 +66,7 @@ class Wayfinder {
     };
 
     float lookaheadDistance = 7.0f;
-    float maxRateChange = 180.0f;
+    float maxRateChange = 180.0f;  // 300.0f for super speed
     float trackWidth = 6.9375f;
     bool reversed = false;
     bool useRateLimiter = true;
