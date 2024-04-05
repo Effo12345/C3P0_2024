@@ -72,10 +72,15 @@ void Odom::withOffsets(const float offsetL, const float offsetR) {
 }
 
 void Odom::setPos(Pose pose, bool radians) {
-    if(radians)
-        pos = pose;
-    else
-        pos = {pose.p, degToRad(pose.a)};
+    if(!radians)
+        pose.a = degToRad(pose.a);
+
+    if(pose.p.x != FLT_MAX)
+        pos.p.x = pose.p.x;
+    if(pose.p.y != FLT_MAX)
+        pos.p.y = pose.p.y;
+    if(pose.a != FLT_MAX)
+        pos.a = pose.a;
 }
 
 Odom::Pose Odom::getPos(bool radians) {
@@ -87,6 +92,12 @@ Odom::Pose Odom::getPos(bool radians) {
 
 Odom::Velocity Odom::getVel() {
     return wheelVel;
+}
+
+void Odom::lockAxes(bool x, bool y, bool theta) {
+    lockX = x;
+    lockY = y;
+    lockTheta = theta;
 }
 
 }

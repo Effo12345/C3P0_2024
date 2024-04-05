@@ -2,15 +2,19 @@
 
 namespace starlib {
 
-Chassis::Chassis(FEHMotor::FEHMotorPort leftMotor, FEHMotor::FEHMotorPort rightMotor, float motorVoltage, 
-            std::pair<FEHIO::FEHIOPin, FEHIO::FEHIOPin> encoderL, float diamL, float offsetL, 
-            std::pair<FEHIO::FEHIOPin, FEHIO::FEHIOPin> encoderR, float diamR, float offsetR,
+Chassis::Chassis(FEHMotor::FEHMotorPort leftMotor, FEHMotor::FEHMotorPort rightMotor, float motorVoltage,
+            encoderPair encoderL, float diamL, 
+            encoderPair encoderR, float diamR,
+            offsetPair drive, offsetPair turn,
             const std::shared_ptr<Interface> interface) {
     driveL = std::make_shared<FEHMotor>(leftMotor, motorVoltage);
     driveR = std::make_shared<FEHMotor>(rightMotor, motorVoltage);
 
     odometer->withSensors({encoderL.first, encoderL.second, diamL}, {encoderR.first, encoderR.second, diamR});
-    odometer->withOffsets(offsetL, offsetR);
+    odometer->withOffsets(drive.first, drive.second);
+
+    turnOffsets = turn;
+    driveOffsets = drive;
 
     gui = interface;
 }
@@ -57,6 +61,8 @@ void Chassis::followNewPath(std::vector<Point> path, std::vector<float> vel, boo
 }
 
 void Chassis::turn(float setpoint, float timeOut) {
+    odometer->withOffsets(turnOffsets.first, turnOffsets.second);
+
     float error = 2.0f;
     float prevError;
     float integral;
@@ -106,6 +112,8 @@ void Chassis::turn(float setpoint, float timeOut) {
 
     gui->clear();
     gui->update(true);
+
+    odometer->withOffsets(driveOffsets.first, driveOffsets.second);
 }
 
 void Chassis::drive(float leftPct, float rightPct) {

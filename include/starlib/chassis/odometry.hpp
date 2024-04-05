@@ -5,6 +5,7 @@
 #include <starlib/chassis/point.hpp>
 #include <memory>
 #include <starlib/utils.hpp>
+#include <float.h>
 
 namespace starlib {
 
@@ -49,6 +50,10 @@ private:
     float lastVelocityTime {};
     Velocity wheelVel;
 
+    bool lockX = false;
+    bool lockY = false;
+    bool lockTheta = false;
+
     std::shared_ptr<QuadEncoder> leftEncoder;
     std::shared_ptr<QuadEncoder> rightEncoder;
 
@@ -60,6 +65,7 @@ public:
     void setPos(Pose pose, bool radians = false);
 
     void step();
+    void lockAxes(bool x, bool y, bool theta);
 
     Pose getPos(bool radians = false);
     Velocity getVel();
