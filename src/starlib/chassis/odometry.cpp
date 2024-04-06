@@ -94,6 +94,10 @@ Odom::Velocity Odom::getVel() {
     return wheelVel;
 }
 
+std::pair<float, float> Odom::getRawEncVals() {
+    return {leftEncoder->distanceTraveled(), rightEncoder->distanceTraveled()};
+}
+
 void Odom::lockAxes(bool x, bool y, bool theta) {
     lockX = x;
     lockY = y;

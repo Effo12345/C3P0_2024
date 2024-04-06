@@ -69,6 +69,7 @@ public:
 
     Pose getPos(bool radians = false);
     Velocity getVel();
+    std::pair<float, float> getRawEncVals();
 };
 
 }
