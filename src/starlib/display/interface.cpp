@@ -51,14 +51,38 @@ namespace starlib {
         LCD.WriteAt(std::to_string(pos.a).substr(0, 6).c_str(), 248, 20);
     }
 
-    void Interface::writeDrivePower() {
+    void Interface::writeEncoderVals() {
         LCD.SetFontColor(WHITE);
 
-        LCD.WriteAt("driveL", 130, 60);
-        LCD.WriteAt("driveR", 230, 60);
+        LCD.WriteAt("encL", 138, 50);
+        LCD.WriteAt("encR", 243, 50);
 
-        LCD.WriteAt(wheelVels.leftVel, 135, 80);
-        LCD.WriteAt(wheelVels.rightVel, 235, 80);
+        LCD.WriteAt(encVals.first, 120, 70);
+        LCD.WriteAt(encVals.second, 220, 70);
+    }
+
+    void Interface::writeLeverNum() {
+        LCD.SetFontColor(WHITE);
+
+        LCD.WriteAt("B", 160, 100);
+        LCD.WriteAt("A1", 205, 100);
+        LCD.WriteAt("A", 260, 100);
+
+        LCD.SetFontColor(RED);
+
+        int circleRad = 10;
+        int circleCoords[3][2] = {
+            {267, 130},
+            {217, 130},
+            {166, 130}
+        };
+
+        LCD.DrawCircle(circleCoords[0][0], circleCoords[0][1], circleRad);
+        LCD.DrawCircle(circleCoords[1][0], circleCoords[1][1], circleRad);
+        LCD.DrawCircle(circleCoords[2][0], circleCoords[2][1], circleRad);
+
+        if(leverNum != -1)
+            LCD.FillCircle(circleCoords[leverNum ][0], circleCoords[leverNum][1], circleRad);
     }
 
     void Interface::writeLightLevel() {
@@ -66,29 +90,21 @@ namespace starlib {
 
         LCD.SetFontColor(WHITE);
 
-        LCD.WriteAt("Amb", 135, 120);
-        LCD.WriteAt("Curr", 198, 120);
-        LCD.WriteAt("Smpl", 265, 120);
+        LCD.WriteAt("Amb", 135, 160);
+        LCD.WriteAt("Curr", 198, 160);
+        LCD.WriteAt("Smpl", 265, 160);
 
-        LCD.WriteAt(ambientLight, 125, 140);
-        LCD.WriteAt(currentLight, 190, 140);
+        LCD.WriteAt(ambientLight, 125, 180);
+        LCD.WriteAt(currentLight, 190, 180);
 
         if(lightColor != BLACK) {
             LCD.SetFontColor(lightColor);
-            LCD.FillRectangle(278, 140, 20, 20);
+            LCD.FillRectangle(278, 180, 20, 20);
         }
         else {
             LCD.SetFontColor(GRAY);
-            LCD.DrawRectangle(278, 140, 20, 20);
+            LCD.DrawRectangle(278, 180, 20, 20);
         }
-    }
-
-    void Interface::writeTimingValues() {
-        LCD.WriteAt("Ctrl", 130, 170);
-        LCD.WriteAt("Rndr", 240, 170);
-
-        LCD.WriteAt(startRndrTime - startCtrlTime, 130, 190);
-        LCD.WriteAt(TimeNow() - startRndrTime, 240, 190);
     }
 
     void Interface::writeBatteryVoltage() {
@@ -103,8 +119,12 @@ namespace starlib {
         pos = position;
     }
 
-    void Interface::setMotorSpeeds(const Odom::Velocity& vels) {
-        wheelVels = vels;
+    void Interface::setEncoderVals(std::pair<float, float> vals) {
+        encVals = vals;
+    }
+
+    void Interface::setLeverNum(int num) {
+        leverNum = num;
     }
 
     void Interface::setColor(int color) {
@@ -147,20 +167,16 @@ namespace starlib {
         if(!isInitialized)
             return;
 
-        startRndrTime = TimeNow();
-
         if(full) {
             drawImage();
             drawRobot();        
         }
 
         writePos();
-        writeDrivePower();
+        writeEncoderVals();
+        writeLeverNum();
         writeLightLevel();
         writeBatteryVoltage();
-        writeTimingValues();
-
-        startCtrlTime = TimeNow();
     }
 
     void Interface::init() {

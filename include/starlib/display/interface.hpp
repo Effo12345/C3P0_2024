@@ -5,6 +5,7 @@
 #include <starlib/cds.hpp>
 #include <FEHBattery.h>
 #include <FEHUtility.h>
+#include <FEHBuzzer.h>
 
 
 namespace starlib {
@@ -20,13 +21,11 @@ class Interface {
     bool isInitialized = false;
 
     Odom::Pose pos {};
-    Odom::Velocity wheelVels {};
+    std::pair<float, float> encVals;
+    int leverNum = -1;
     float ambientLight {};
     float currentLight {};
     int lightColor = BLACK;
-
-    float startCtrlTime {};
-    float startRndrTime {};
 
     std::shared_ptr<Cds> cdsCell;
 
@@ -34,9 +33,9 @@ class Interface {
     void drawRobot();
 
     void writePos();
-    void writeDrivePower();
+    void writeEncoderVals();
+    void writeLeverNum();
     void writeLightLevel();
-    void writeTimingValues();
     void writeBatteryVoltage();
 
     float canvasX(float x);
@@ -50,7 +49,8 @@ public:
     void update(bool full = false);
 
     void setPos(const Odom::Pose& position);
-    void setMotorSpeeds(const Odom::Velocity& vels);
+    void setEncoderVals(std::pair<float, float> vals);
+    void setLeverNum(int num);
     void setColor(int color);
     void setLightLevel(float light);
 

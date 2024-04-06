@@ -48,8 +48,7 @@ void Chassis::followNewPath(std::vector<Point> path, std::vector<float> vel, boo
 
         drive(pwr.leftVel, pwr.rightVel); // Motor speeds sent to gui here
 
-        gui->setPos(pos);
-        gui->update();
+        updateGui(pos);
 
         Sleep(10);
     } while(std::fabs(velocity.leftVel) > 2.0f || pos.p.distanceTo(startPos.p) < 2.0f);   // Todo: add settled util
@@ -74,8 +73,7 @@ void Chassis::turn(float setpoint, float timeOut) {
 
         odometer->step();
 
-        Odom::Pose position = odometer->getPos();
-        float adj_heading = position.a;
+        float adj_heading = odometer->getPos().a;
 
         error = setpoint - adj_heading; 
 
@@ -100,10 +98,9 @@ void Chassis::turn(float setpoint, float timeOut) {
         // LCD.WriteAt(errorOut.c_str(), 0, 20);
         // LCD.WriteAt(powerOut.c_str(), 0, 40);
 
-        drive(power, -power); // Writes motor powers to gui
+        drive(power, -power); // Writes encoder positions
 
-        gui->setPos(position);
-        gui->update();
+        updateGui();
 
         Sleep(10);
     }
@@ -119,8 +116,6 @@ void Chassis::turn(float setpoint, float timeOut) {
 void Chassis::drive(float leftPct, float rightPct) {
     driveL->SetPercent(clamp(leftPct, -100.0f, 100.0f));
     driveR->SetPercent(clamp(rightPct, -100.0f, 100.0f));
-
-    gui->setMotorSpeeds({leftPct, rightPct});
 }
 
 void Chassis::driveFor(float pwr, float time) {
@@ -129,10 +124,21 @@ void Chassis::driveFor(float pwr, float time) {
     float start = TimeNow();
     while(TimeNow() - start < time) {
         odometer->step();
+        updateGui();
         Sleep(10);
     }
 
     drive(0.0f, 0.0f);
+}
+
+void Chassis::updateGui(Odom::Pose position) {
+    gui->setPos(position);
+    gui->setEncoderVals(odometer->getRawEncVals());
+    gui->update();
+}
+
+void Chassis::updateGui() {
+    updateGui(odometer->getPos());
 }
 
 }

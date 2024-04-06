@@ -26,6 +26,9 @@ class Chassis {
     offsetPair turnOffsets;
     offsetPair driveOffsets;
 
+    void updateGui();
+    void updateGui(Odom::Pose position);
+
 public:
     Chassis(FEHMotor::FEHMotorPort leftMotor, FEHMotor::FEHMotorPort rightMotor, float motorVoltage,
             encoderPair encoderL, float diamL, 
