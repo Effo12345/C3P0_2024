@@ -82,7 +82,7 @@ namespace starlib {
         LCD.DrawCircle(circleCoords[2][0], circleCoords[2][1], circleRad);
 
         if(leverNum != -1)
-            LCD.FillCircle(circleCoords[leverNum ][0], circleCoords[leverNum][1], circleRad);
+            LCD.FillCircle(circleCoords[leverNum][0], circleCoords[leverNum][1], circleRad);
     }
 
     void Interface::writeLightLevel() {
