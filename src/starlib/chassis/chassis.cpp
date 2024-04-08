@@ -6,6 +6,7 @@ Chassis::Chassis(FEHMotor::FEHMotorPort leftMotor, FEHMotor::FEHMotorPort rightM
             encoderPair encoderL, float diamL, 
             encoderPair encoderR, float diamR,
             offsetPair drive, offsetPair turn,
+            float settledVel, float settledTime,
             const std::shared_ptr<Interface> interface) {
     driveL = std::make_shared<FEHMotor>(leftMotor, motorVoltage);
     driveR = std::make_shared<FEHMotor>(rightMotor, motorVoltage);
@@ -15,6 +16,8 @@ Chassis::Chassis(FEHMotor::FEHMotorPort leftMotor, FEHMotor::FEHMotorPort rightM
 
     turnOffsets = turn;
     driveOffsets = drive;
+
+    settled = std::make_shared<SettledUtil>(settledVel, settledTime);
 
     gui = interface;
 }
@@ -36,6 +39,8 @@ std::shared_ptr<Odom> Chassis::getOdomModel() {
 void Chassis::followNewPath(std::vector<Point> path, std::vector<float> vel, bool isReversed) {
     Odom::Pose startPos = odometer->getPos();
     pather->setNewPath(path, vel, startPos, isReversed);
+
+    settled->reset();
     
     Odom::Velocity velocity;
     Odom::Pose pos;
@@ -46,28 +51,37 @@ void Chassis::followNewPath(std::vector<Point> path, std::vector<float> vel, boo
         pos = odometer->getPos();
         Odom::Velocity pwr = pather->step(pos, velocity);
 
-        drive(pwr.leftVel, pwr.rightVel); // Motor speeds sent to gui here
+        drive(pwr.leftVel, pwr.rightVel);
 
         updateGui(pos);
 
         Sleep(10);
-    } while(std::fabs(velocity.leftVel) > 2.0f || pos.p.distanceTo(startPos.p) < 2.0f);   // Todo: add settled util
+    } while(settled->isSettled(velocity));
 
     drive(0.0f, 0.0f);
 
+    // float start = TimeNow();
+    // while(TimeNow() - start < 1.0f) {
+    //     odometer->step();
+    //     Sleep(10);
+    // }
+
+    // gui->setPos(odometer->getPos());
     gui->clear();
     gui->update(true);
 }
 
 void Chassis::turn(float setpoint, float timeOut) {
-    odometer->withOffsets(turnOffsets.first, turnOffsets.second);
+    // odometer->withOffsets(turnOffsets.first, turnOffsets.second);
+
+    settled->reset();
 
     float error = 2.0f;
     float prevError;
     float integral;
 
     float start = TimeNow();
-    while(std::fabs(error) > 1.0f && TimeNow() - start < timeOut) {
+    while(settled->isSettled(odometer->getVel()) && TimeNow() - start < timeOut) {
         const float Ki_active_t = 10;
         const float Ki_limit_t  = 100000;
 
@@ -98,7 +112,7 @@ void Chassis::turn(float setpoint, float timeOut) {
         // LCD.WriteAt(errorOut.c_str(), 0, 20);
         // LCD.WriteAt(powerOut.c_str(), 0, 40);
 
-        drive(power, -power); // Writes encoder positions
+        drive(power, -power);
 
         updateGui();
 
@@ -107,10 +121,17 @@ void Chassis::turn(float setpoint, float timeOut) {
 
     drive(0.0f, 0.0f);
 
+    // start = TimeNow();
+    // while(TimeNow() - start < 1.0f) {
+    //     odometer->step();
+    //     Sleep(10);
+    // }
+
+    // gui->setPos(odometer->getPos());
     gui->clear();
     gui->update(true);
 
-    odometer->withOffsets(driveOffsets.first, driveOffsets.second);
+    // odometer->withOffsets(driveOffsets.first, driveOffsets.second);
 }
 
 void Chassis::drive(float leftPct, float rightPct) {
@@ -119,6 +140,8 @@ void Chassis::drive(float leftPct, float rightPct) {
 }
 
 void Chassis::driveFor(float pwr, float time) {
+    settled->reset();
+
     drive(pwr, pwr);
 
     float start = TimeNow();
@@ -128,7 +151,18 @@ void Chassis::driveFor(float pwr, float time) {
         Sleep(10);
     }
 
+    awaitSettled();
+
     drive(0.0f, 0.0f);
+}
+
+// Must call settled->reset() beforehand (at the start of the movement)
+void Chassis::awaitSettled() {
+    while(!settled->isSettled(odometer->getVel())) {
+        odometer->step();
+        updateGui();
+        Sleep(10);
+    }
 }
 
 void Chassis::updateGui(Odom::Pose position) {
