@@ -150,6 +150,8 @@ public:
 
     static int processQuadTicks(int state1, int state2, int &prevState);
 
+    void tare();
+
 private:
     FEHIO::FEHIOPin _pin1;
     FEHIO::FEHIOPin _pin2;

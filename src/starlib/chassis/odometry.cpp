@@ -98,6 +98,17 @@ std::pair<float, float> Odom::getRawEncVals() {
     return {leftEncoder->distanceTraveled(), rightEncoder->distanceTraveled()};
 }
 
+void Odom::tarSensors() {
+    leftEncoder->tare();
+    rightEncoder->tare();
+
+    prevRightEncoder = 0.0f;
+    prevLeftEncoder = 0.0f;
+
+    prevLeftDeg = 0.0f;
+    prevRightDeg = 0.0f;
+}
+
 void Odom::lockAxes(bool x, bool y, bool theta) {
     lockX = x;
     lockY = y;

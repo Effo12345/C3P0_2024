@@ -428,6 +428,15 @@ void DigitalEncoder::ResetCounts()
 }
 
 
+void QuadEncoder::tare() {
+    if((int)_pin1 < 8) {
+        quadTicks[0] = 0;
+    }
+    else {
+        quadTicks[1] = 0;
+    }
+}
+
 int QuadEncoder::ticks() {
     if((int)_pin1 < 8) {
         return quadTicks[0];
