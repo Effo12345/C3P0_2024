@@ -6,7 +6,7 @@ namespace starlib {
     : velTarget{velThreshold}, targetTimeSettled{minSettledTime} {}
 
     bool SettledUtil::isSettled(const Odom::Velocity& wheelVels) {
-        if(wheelVels.leftVel > velTarget || wheelVels.rightVel > velTarget)
+        if(std::fabs(wheelVels.leftVel) > velTarget || std::fabs(wheelVels.rightVel) > velTarget)
             settledStartTime = TimeNow();
             
         return (TimeNow() - settledStartTime) > targetTimeSettled;
