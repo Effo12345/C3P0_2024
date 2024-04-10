@@ -56,7 +56,7 @@ void Chassis::followNewPath(std::vector<Point> path, std::vector<float> vel, boo
         updateGui(pos);
 
         Sleep(10);
-    } while(settled->isSettled(velocity));
+    } while(!settled->isSettled(velocity) || pos.p.distanceTo(startPos.p) < 2.0f);
 
     drive(0.0f, 0.0f);
 
@@ -81,7 +81,7 @@ void Chassis::turn(float setpoint, float timeOut) {
     float integral;
 
     float start = TimeNow();
-    while(settled->isSettled(odometer->getVel()) && TimeNow() - start < timeOut) {
+    while(!settled->isSettled(odometer->getVel()) && TimeNow() - start < timeOut) {
         const float Ki_active_t = 10;
         const float Ki_limit_t  = 100000;
 
@@ -151,9 +151,9 @@ void Chassis::driveFor(float pwr, float time) {
         Sleep(10);
     }
 
-    awaitSettled();
-
     drive(0.0f, 0.0f);
+
+    awaitSettled();
 }
 
 // Must call settled->reset() beforehand (at the start of the movement)
@@ -163,6 +163,10 @@ void Chassis::awaitSettled() {
         updateGui();
         Sleep(10);
     }
+}
+
+void Chassis::resetSettled() {
+    settled->reset();
 }
 
 void Chassis::updateGui(Odom::Pose position) {

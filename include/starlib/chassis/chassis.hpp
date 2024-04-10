@@ -51,6 +51,7 @@ public:
     void driveFor(float pwr, float time);
 
     void awaitSettled();
+    void resetSettled();
 };
 
 }
