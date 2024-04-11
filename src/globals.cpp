@@ -15,3 +15,4 @@ std::shared_ptr<Chassis> chassis = std::make_shared<Chassis>(
 std::shared_ptr<Cds> cds = std::make_shared<Cds>(FEHIO::P3_7, 0.65f, 0.6f, 30.0f);
 
 FEHServo fuelArm(FEHServo::Servo0);
+FEHServo highButton(FEHServo::Servo1);
