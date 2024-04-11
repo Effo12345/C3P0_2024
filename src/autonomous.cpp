@@ -285,7 +285,7 @@ void showcase() {
     });
 
     // Sample cds here
-
+    cds->sampleLight();
 
     // Drive to luggage
     chassis->followNewPath({
@@ -324,6 +324,12 @@ void showcase() {
         0
     }, true);
 
+    // if(cds->getColor() == RED) {
+    //     // Press red button
+    // }
+    // else {
+    //     // Press blue button (default)
+    // }
 
     // Press blue button
     chassis->followNewPath({
