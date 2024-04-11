@@ -7,5 +7,7 @@ extern void checkpoint3();
 extern void checkpoint4();
 extern void checkpoint5();
 
+extern void showcase();
+
 extern void rampTesting();
 extern void armTesting();
