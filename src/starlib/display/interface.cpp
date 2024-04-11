@@ -148,6 +148,8 @@ namespace starlib {
         if(!isInitialized)
             return;
 
+        LCD.ClearBuffer();
+
         LCD.Clear(BLACK);
         int tmpX, tmpY;
         while(!LCD.Touch(&tmpX, &tmpY)) {
@@ -183,6 +185,8 @@ namespace starlib {
         LCD.Clear(BLACK);
         isInitialized = true;
         // drawImage();
+
+        LCD.ClearBuffer();
     }
 
     void Interface::withCdsCell(std::shared_ptr<Cds> cds) {
