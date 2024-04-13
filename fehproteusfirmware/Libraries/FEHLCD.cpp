@@ -532,6 +532,12 @@ void FEHLCD::PrintLogo(int x, int y)
 
 }
 
+/**
+ * Draw a black and white image of the SP2024 course onto the PROTEUS display
+ * 
+ * @param x X-coordinate of the top left corner (pixel)
+ * @param y Y-coordinate of the top left corner (pixel)
+*/
 void FEHLCD::PrintFieldImage(int x, int y) {
     SetDrawRegion(x, y, 120, 240);
     int fieldLength = sizeof(fieldImage) / sizeof(fieldImage[0]);

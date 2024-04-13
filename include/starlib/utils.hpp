@@ -13,7 +13,7 @@ public:
   void reset();
 };
 
-
+// Templated clamp function since the PROTEUS does not include C++17
 template <typename T>
 T clamp(const T& n, const T& lower, const T& upper) {
   return std::max(lower, std::min(n, upper));
@@ -22,4 +22,4 @@ T clamp(const T& n, const T& lower, const T& upper) {
 extern float degToRad(float deg);
 extern float radToDeg(float rad);
 
-}
+} // namespace starlib

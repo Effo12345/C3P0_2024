@@ -11,6 +11,7 @@
 namespace starlib {
 
 class Interface {
+    // Image config
     const int imgRows = 240;
     const int imgCols = 120;
 
@@ -18,6 +19,7 @@ class Interface {
     const float canvasScaleY = 36.0f;
     const int robotRadius = 4;
 
+    // GUI state variables
     bool isInitialized = false;
 
     Odom::Pose pos {};
@@ -29,6 +31,7 @@ class Interface {
 
     std::shared_ptr<Cds> cdsCell;
 
+    // All functions that directly write to the display are private
     void drawImage();
     void drawRobot();
 
@@ -38,24 +41,28 @@ class Interface {
     void writeLightLevel();
     void writeBatteryVoltage();
 
+    // Util functions
     float canvasX(float x);
     float canvasY(float y);
 
     void fetchCdsValues();
 public:
+    // Config
     void withCdsCell(std::shared_ptr<Cds> cds);
 
     void init();
     void update(bool full = false);
 
+    // Setters
     void setPos(const Odom::Pose& position);
     void setEncoderVals(std::pair<float, float> vals);
     void setLeverNum(int num);
     void setColor(int color);
     void setLightLevel(float light);
 
+    // External utils
     void pause();
     void clear();
 };
 
-}
+} // namespace starlib

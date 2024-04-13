@@ -2,6 +2,10 @@
 
 namespace starlib {
 
+/**
+ * Slew input such that it can change from previous input by a max of 
+ * +/- maxRateChange
+*/
 float rateLimiter::constrain(float input, float maxRateChange) {
     float maxChange = (0.0144f) * maxRateChange;
     float temp = input - output;
@@ -11,8 +15,11 @@ float rateLimiter::constrain(float input, float maxRateChange) {
     return output;
 }
 
+/**
+ * Tare rate limiter
+*/
 void rateLimiter::reset() {
-    output = 0.0;
+    output = 0.0f;
 }
 
 /**
@@ -29,4 +36,4 @@ float radToDeg(float rad) {
     return rad / (M_PI / 180);
 }
 
-}
+}  // namespace starlib

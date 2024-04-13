@@ -85,6 +85,13 @@ public:
      */
     void PrintLogo(int x, int y);
 
+    /**
+     * Draw a black and white image of the SP2024 course onto the PROTEUS display.
+     * Takes ~300 ms to finish
+     * 
+     * @param x X-coordinate of the top left corner (pixel)
+     * @param y Y-coordinate of the top left corner (pixel)
+    */
     void PrintFieldImage(int x, int y);
 
     /**

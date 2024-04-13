@@ -241,21 +241,13 @@ void DigitalEncoder::Initialize( FEHIO::FEHIOPin pin, FEHIO::FEHIOInterruptTrigg
     }
 }
 
-//
-//
-//
-//
-// TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-// Remove LCD include in this file
-// Remove testPin function in QuadEncoder
-//
-//
-//
-
 
 // Store the pins of the two quad encoders
 std::pair<FEHIO::FEHIOPin, FEHIO::FEHIOPin> quadPins[2];
 
+/**
+ * Configure GPIO registers and set internal values to prepare for tracking
+*/
 void QuadEncoder::Initialize( FEHIO::FEHIOPin pin1, FEHIO::FEHIOPin pin2, FEHIO::FEHIOInterruptTrigger trigger ) {
     // store selected pin numbers in class
     _pin1 = pin1;
@@ -271,6 +263,7 @@ void QuadEncoder::Initialize( FEHIO::FEHIOPin pin1, FEHIO::FEHIOPin pin2, FEHIO:
     }
     
 
+    // Initialize GPIO interrupts 
 	unsigned char trig = (unsigned char)trigger;
     switch( GPIOPorts[ (int)_pin1 ] ) {
         case PortB: {
@@ -296,19 +289,17 @@ void QuadEncoder::Initialize( FEHIO::FEHIOPin pin1, FEHIO::FEHIOPin pin2, FEHIO:
     }
 }
 
-std::pair<int, int> QuadEncoder::pinTest() {
-    // int pin1 = GPIOA_PDIR & GPIO_PDIR_PDI( GPIO_PIN( GPIOPinNumbers[ (int)quadPins[0].first ] ) );
-    // int pin2 = GPIOA_PDIR & GPIO_PDIR_PDI( GPIO_PIN( GPIOPinNumbers[ (int)quadPins[0].second ] ) );
-
-    int pin1 = 0;
-    int pin2 = 0;
-
-    return {pin1, pin2};
-}
-
-// Returns 1 if forward, -1 if backward, 0 if invalid state
-// Modifies previous state at the end of execution
-// state1 becomes least significant digit, state2 most significant
+/**
+ * Converts current and previous quad encoder states to a signed delta since
+ * last updated. Designed to be called on pin interrupt. Modifies previous state
+ * at th end of execution
+ * 
+ * @param state1 State of first encoder pin
+ * @param state2 State of second encoder pin
+ * @param prevState Last state computed by this function (set 0 on startup)
+ * @requires -1 <= state1, state2, and prevState <= 1
+ * @ensures -1 <= processQuadTicks <= 1
+*/
 int QuadEncoder::processQuadTicks(int state1, int state2, int &prevState) {
     // (1-1) evaluates to zero, but marks an impossible state
     const int directionMatrix[4][4] = {
@@ -375,9 +366,6 @@ void PORTC_IRQHandler() {
         // One of the pins we care about has an interrupt, so process them both
         pin1 = (GPIOC_PDIR & GPIO_PDIR_PDI( GPIO_PIN( GPIOPinNumbers[ (int)quadPins[1].first ] ) )) != 0;
         pin2 = (GPIOC_PDIR & GPIO_PDIR_PDI( GPIO_PIN( GPIOPinNumbers[ (int)quadPins[1].second ] ) )) != 0;
-
-        // LCD.WriteAt(pin1, 0, 100);
-        // LCD.WriteAt(pin2, 20, 100);
     }
 
     quadTicks[1] += QuadEncoder::processQuadTicks(pin1, pin2, lastCState);

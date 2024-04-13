@@ -5,6 +5,9 @@
 
 namespace starlib {
 
+/**
+ * Store 2D point data and define 2D operations
+*/
 struct Point {
     float x;
     float y;
@@ -78,4 +81,4 @@ struct Point {
         }
 	};
 
-};
+} // namespace starlib

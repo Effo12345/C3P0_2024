@@ -8,6 +8,7 @@
 #include <starlib/display/interface.hpp>
 #include <starlib/chassis/settledutil.hpp>
 
+// Define short names for long types
 using encoderPair = std::pair<FEHIO::FEHIOPin, FEHIO::FEHIOPin>;
 using offsetPair = std::pair<float, float>;
 
@@ -33,6 +34,7 @@ class Chassis {
     void updateGui(Odom::Pose position);
 
 public:
+    // Config
     Chassis(FEHMotor::FEHMotorPort leftMotor, FEHMotor::FEHMotorPort rightMotor, float motorVoltage,
             encoderPair encoderL, float diamL, 
             encoderPair encoderR, float diamR,
@@ -43,15 +45,16 @@ public:
     void setPIDConstants(float pConst, float iConst, float dConst);
     void setPPConstants(float kV, float kA, float kP);
 
-    std::shared_ptr<Odom> getOdomModel();
-
+    // Movement
     void followNewPath(std::vector<Point> path, std::vector<float> vel, bool isReversed = false);
     void turn(float angle, float timeOut = 1.0f);
-    void drive(float leftPct, float rightPct);
     void driveFor(float pwr, float time);
+    void drive(float leftPct, float rightPct);
 
+    // Util
+    std::shared_ptr<Odom> getOdomModel();
     void awaitSettled();
     void resetSettled();
 };
 
-}
+} // namespace starlib

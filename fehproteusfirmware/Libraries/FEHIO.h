@@ -6,8 +6,6 @@
 #include "adc16.h"
 #include <utility>
 
-#include <FEHLCD.h>
-
 /**
  * @brief Objects to be used with the 32 Flex I/O Pins on the FEH Proteus.
  *
@@ -143,7 +141,6 @@ public:
     QuadEncoder( FEHIO::FEHIOPin pin1, FEHIO::FEHIOPin pin2);
     QuadEncoder(FEHIO::FEHIOPin pin1, FEHIO::FEHIOPin pin2, float wheelDiameter);
 
-    std::pair<int, int> pinTest();
     int ticks();
     float degrees();
     float distanceTraveled();
