@@ -240,4 +240,4 @@ void Chassis::updateGui() {
     updateGui(odometer->getPos());
 }
 
-}
+} // namespace starlib

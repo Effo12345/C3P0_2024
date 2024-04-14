@@ -2,6 +2,8 @@
 
 #include <FEHIO.h>
 #include <memory>
+#include <FEHUtility.h>
+#include <FEHLCD.h>
 
 namespace starlib {
 
@@ -29,4 +31,4 @@ namespace starlib {
         float getAmbientSample();
     };
 
-}
+} // namespace starlib

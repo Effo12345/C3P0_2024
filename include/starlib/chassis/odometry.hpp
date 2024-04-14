@@ -75,4 +75,4 @@ public:
     void tarSensors();
 };
 
-}
+} // namespace starlib

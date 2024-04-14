@@ -132,9 +132,9 @@ private:
 
 /**
  * @brief Monitor a digital quad encoder using two digital input pins on the Proteus
- * P3_6 and P3_7 cannot be used for digital encoders as they are hard-wired to other Proteus functions.
- * Both pins must be in the same bank. Quad encoder mode is only enabled on banks
- * A and B.
+ * P3_6 and P3_7 cannot be used for digital encoders as they are hard-wired to other 
+ * Proteus functions. Both pins must be in the same bank. Quad encoder mode is 
+ * only enabled on banks A and B.
  */
 class QuadEncoder {
 public:
