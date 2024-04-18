@@ -11,4 +11,4 @@ extern std::shared_ptr<starlib::Chassis> chassis;
 extern std::shared_ptr<starlib::Cds> cds;
 
 extern FEHServo fuelArm;
-extern FEHServo highButton;
+extern FEHServo passportArm;

@@ -190,7 +190,6 @@ Odom::Velocity Wayfinder::followPath(Odom::Pose pos, Odom::Velocity measuredVel)
 
     Odom::Velocity feedBack = (targetVelocities - measuredVel) * kP;
 
-
     // Divide by the absolute max velocity the drivetrain is capable of to 
     // normalize the value between [-100, 100].
     return ((feedForward + feedBack) / absoluteVelocityLimit) * 100;
@@ -216,9 +215,9 @@ void Wayfinder::setNewPath(std::vector<Point>& path, std::vector<float>& vel, Od
     reversed = isReversed;
 
     lastClosestPointIndex = 0;
-    lastFractionalIndex = 0.0;
+    lastFractionalIndex = 0.0f;
     lastLookahead = pos.p;
-    lastVelocities = {0, 0};
+    lastVelocities = {0.0f, 0.0f};
     error = 0.0;
     limit.reset();
 }

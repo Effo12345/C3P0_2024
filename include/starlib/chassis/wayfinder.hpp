@@ -7,6 +7,7 @@
 #include <vector>
 #include <stdexcept>
 #include <FEHLCD.h>
+#include <FEHSD.h>
 
 namespace starlib { 
 
