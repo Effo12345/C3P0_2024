@@ -1,22 +1,8 @@
 #include <autonomous.hpp>
 #include <FEHRCS.h>
 
-/**
- * Final route for the in-class performance test
-*/
-void showcase() {
-    // Fetch lever from RCS and give to GUI
-    // int leverNum = RCS.GetCorrectLever();
-    int leverNum = 1;
-    gui->setLeverNum(leverNum);
-
-    // Set initial states for servos and press starting button
-    fuelArm.SetDegree(0.0f);
-    // highButton.SetDegree(0);
-    passportArm.SetDegree(148);
-    chassis->driveFor(25.0f, 0.2f);
-
-    if(leverNum == 0) {
+void fuelLever(int leverNum) {
+     if(leverNum == 0) {
         // Route for first lever
         chassis->followNewPath({
             {11.58859813084112, -29.896364380693885},
@@ -193,7 +179,9 @@ void showcase() {
 
     // Hard reset against wall
     chassis->getOdomModel()->setPos({{-10.65, FLT_MAX}, 90.0f});
+}
 
+void ramp() {
     // Drive to ramp
     chassis->followNewPath({
         {-15.678691588785046, -18.876601530226594},
@@ -295,7 +283,9 @@ void showcase() {
 
     // Hard reset at top of ramp
     chassis->getOdomModel()->setPos({{10.75f, FLT_MAX}, -90.0f});
+}
 
+void light() {
     // Drive to light
     chassis->followNewPath({
         {15.082219626168223, 10.565512955754718},
@@ -340,7 +330,9 @@ void showcase() {
 
     // Sample light color using cds cell
     cds->sampleLight();
+}
 
+void luggage() {
     // Drive to luggage
     chassis->followNewPath({
         {-8.265397196261683, 26.127773469773413},
@@ -375,7 +367,9 @@ void showcase() {
         27.95545843912436,
         0
     }, true);
+}
 
+void button() {
     if(cds->getColor() == RED) {
         // Press red button (primary points only)
         chassis->followNewPath({
@@ -458,10 +452,9 @@ void showcase() {
         0
         });
     }
+}
 
-    // Drive into button to make sure it's pressed
-    // chassis->driveFor(25.0f, 0.6f);
-
+void passport() {
     // Try to press the top button (NOT FUNCTIONAL)
     // highButton.SetDegree(70);
     // Sleep(1000);
@@ -495,8 +488,6 @@ void showcase() {
 
     chassis->turn(0.0f);
 
-    gui->pause();
-
     chassis->followNewPath({
         {4.856985981308411, 14.603288656689298},
         {4.904900411160484, 16.455861922583583},
@@ -528,9 +519,8 @@ void showcase() {
 
     chassis->turn(0.0f);
     passportArm.SetDegree(55);
-    Sleep(2000);
+    Sleep(500);
     passportArm.SetDegree(180);
-    Sleep(1000);
 
     chassis->driveFor(25.0f, 0.15f);
     fuelArm.SetDegree(40.0f);
@@ -570,7 +560,9 @@ void showcase() {
     // fuelArm.SetDegree(0.0f);
 
     // gui->pause();
+}
 
+void finalButton() {
     // Path to final button
     chassis->followNewPath({
         {4.77177570093458, 19.902869264165933},
@@ -651,4 +643,29 @@ void showcase() {
     // In case the we miss, turn then back up into final button
     chassis->turn(-45.0f);
     chassis->driveFor(-50.0f, 2.0f);
+}
+
+/**
+ * Final route for the in-class performance test
+*/
+void showcase() {
+    // Fetch lever from RCS and give to GUI
+    // int leverNum = RCS.GetCorrectLever();
+    int leverNum = 1;
+    gui->setLeverNum(leverNum);
+
+    // Set initial states for servos and press starting button
+    fuelArm.SetDegree(0.0f);
+    passportArm.SetDegree(148);
+
+    chassis->driveFor(25.0f, 0.2f);
+
+    
+    fuelLever(leverNum);
+    ramp();
+    light();
+    luggage();
+    button();
+    passport();
+    finalButton();
 }
