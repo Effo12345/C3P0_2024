@@ -81,8 +81,6 @@ void Chassis::followNewPath(std::vector<Point> path, std::vector<float> vel, boo
     
     Odom::Velocity velocity;
     Odom::Pose pos;
-    
-    int tX, tY;
 
     // Loop until the robot is settled and it is more than 2 inches from its
     // starting position
@@ -99,13 +97,13 @@ void Chassis::followNewPath(std::vector<Point> path, std::vector<float> vel, boo
         updateGui(pos);
 
         Sleep(10);
-    } while(!LCD.Touch(&tX, &tY) && (!settled->isSettled(velocity) || pos.p.distanceTo(startPos.p) < 2.0f));
+    } while(!settled->isSettled(velocity) || pos.p.distanceTo(startPos.p) < 2.0f);
 
     drive(0.0f, 0.0f);
 
     // Full update at end of movement
-    gui->clear();
-    gui->update(true);
+    // gui->clear();
+    gui->update();
 }
 
 /**
@@ -162,8 +160,8 @@ void Chassis::turn(float setpoint, float timeOut) {
 
     drive(0.0f, 0.0f);
 
-    gui->clear();
-    gui->update(true);
+    // gui->clear();
+    gui->update();
 }
 
 /**
