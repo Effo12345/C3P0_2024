@@ -109,6 +109,7 @@ void fuelLever(int leverNum) {
         // Align with lever
         chassis->turn(89.0f);
 
+        float flipDownTime = TimeNow();
         // Actuate lever, then move arm up
         fuelArm.SetDegree(100);
         Sleep(1000);
@@ -125,7 +126,7 @@ void fuelLever(int leverNum) {
         chassis->driveFor(15.0f, 0.5f);
 
         // Wait until 5 seconds elapsed, then unflip lever
-        Sleep(4.0f);
+        Sleep(5.25f - (TimeNow() - flipDownTime));
         fuelArm.SetDegree(85);
         Sleep(300);
 
@@ -155,6 +156,7 @@ void fuelLever(int leverNum) {
     else { // Lever 3 (same as above)
         chassis->turn(89.0f);
 
+        float flipDownTime = TimeNow();
         fuelArm.SetDegree(100);
         Sleep(1000);
         fuelArm.SetDegree(0);
@@ -168,7 +170,7 @@ void fuelLever(int leverNum) {
 
         chassis->driveFor(-25.0f, 0.5f);
 
-        Sleep(4.0f);
+        Sleep(5.25f - (TimeNow() - flipDownTime));
         fuelArm.SetDegree(75);
 
         // Get arm out of the way of the levers
