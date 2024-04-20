@@ -372,6 +372,8 @@ void luggage() {
 }
 
 void button() {
+    highButton.SetDegree(180.0f);
+
     if(cds->getColor() == RED) {
         // Press red button (primary points only)
         chassis->followNewPath({
@@ -454,6 +456,9 @@ void button() {
         0
         });
     }
+
+    highButton.SetDegree(0.0f);
+    Sleep(1000);
 }
 
 void passport() {
@@ -661,6 +666,7 @@ void showcase() {
     // Set initial states for servos and press starting button
     fuelArm.SetDegree(0.0f);
     passportArm.SetDegree(148);
+    highButton.SetDegree(0.0f);
 
     chassis->driveFor(25.0f, 0.2f);
 

@@ -13,12 +13,19 @@ void startup() {
     passportArm.SetMin(500);
     passportArm.SetMax(2500);
 
+    highButton.SetMin(1158);
+    highButton.SetMax(2092);
+
     gui->withCdsCell(cds);
 
     // Connect to RCS
     RCS.InitializeTouchMenu("C3Hp3wz3E");
 
     gui->init();
+
+    fuelArm.SetDegree(0.0f);
+    passportArm.SetDegree(60.0f);
+    highButton.SetDegree(0.0f);
 
     // Wait for permission to sample ambient light level
     gui->pause();
