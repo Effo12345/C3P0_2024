@@ -13,8 +13,8 @@ void startup() {
     passportArm.SetMin(500);
     passportArm.SetMax(2500);
 
-    highButton.SetMin(1158);
-    highButton.SetMax(2092);
+    highButton.SetMin(650);
+    highButton.SetMax(1465);
 
     gui->withCdsCell(cds);
 
@@ -25,7 +25,7 @@ void startup() {
 
     fuelArm.SetDegree(0.0f);
     passportArm.SetDegree(60.0f);
-    highButton.SetDegree(0.0f);
+    highButton.SetDegree(180.0f);
 
     // Wait for permission to sample ambient light level
     gui->pause();

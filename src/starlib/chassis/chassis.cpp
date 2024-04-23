@@ -104,8 +104,8 @@ void Chassis::followNewPath(std::vector<Point> path, std::vector<float> vel, boo
     drive(0.0f, 0.0f);
 
     // Full update at end of movement
-    gui->clear();
-    gui->update(true);
+    // gui->clear();
+    // gui->update(true);
 }
 
 /**
@@ -162,8 +162,8 @@ void Chassis::turn(float setpoint, float timeOut) {
 
     drive(0.0f, 0.0f);
 
-    gui->clear();
-    gui->update(true);
+    // gui->clear();
+    // gui->update(true);
 }
 
 /**

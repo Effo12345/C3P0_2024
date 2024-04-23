@@ -18,7 +18,7 @@ std::shared_ptr<Chassis> chassis = std::make_shared<Chassis>(
 );
 
 // Red color threshold, starting light threshold, starting light timeout
-std::shared_ptr<Cds> cds = std::make_shared<Cds>(FEHIO::P3_7, 0.65f, 0.55f, 30.0f);
+std::shared_ptr<Cds> cds = std::make_shared<Cds>(FEHIO::P3_7, 2.0f, 0.65f, 30.0f);
 
 FEHServo fuelArm(FEHServo::Servo0);
 FEHServo passportArm(FEHServo::Servo1);
